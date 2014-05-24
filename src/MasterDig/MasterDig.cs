@@ -6,7 +6,9 @@ using MasterDig.Inventory;
 using Skylight;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +16,6 @@ namespace MasterDig
 {
     public partial class MasterDig : ASubBot, IPlugin
     {
-        protected Dictionary<IPlayer, DigPlayer> digPlayers = new Dictionary<IPlayer, DigPlayer>();
         protected Queue<BlockWithPos> dugBlocksToPlaceQueue = new Queue<BlockWithPos>();
         protected object dugBlocksToPlaceQueueLock = 0;
         protected float[,] digHardness;
@@ -44,7 +45,6 @@ namespace MasterDig
                 return;
 
             IBlock block = bot.Room.getBlock(0, x, y);
-
             int blockId = -1;
 
             if (mining)
@@ -52,24 +52,26 @@ namespace MasterDig
                 if (DigBlockMap.blockTranslator.ContainsKey(block.Id))
                 {
                     blockId = 4;
-
                     InventoryItem temp = DigBlockMap.blockTranslator[block.Id];
 
-                    /* if (player.digLevel >= Convert.ToInt32(temp.GetDataAt(5)))
+                    if(!player.HasMetadata("digplayer"))
+                        player.SetMetadata("digplayer", new DigPlayer(player));
+                    DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
+
+                    if (digPlayer.digLevel >= Convert.ToInt32(temp.GetDataAt(5)))
                      {
                          //Shop.shopInventory[DigBlockMap.blockTranslator[block.blockId]].GetDataAt(3)//för hårdhet
                          if (digHardness[x, y] <= digStrength)
                          {
-
                              InventoryItem newsak = new InventoryItem(temp.GetData());
-                             player.inventory.AddItem(newsak, 1);
-                             player.digXp += Convert.ToInt32(temp.GetDataAt(1));
+                             digPlayer.inventory.AddItem(newsak, 1);
+                             digPlayer.digXp += Convert.ToInt32(temp.GetDataAt(1));
                          }
                      }
                      else
                      {
                          return;
-                     }*/
+                     }
 
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using Graphics.Tools.Noise;
 using MasterBot;
+using MasterBot.Room;
 using MasterBot.Room.Block;
 using MasterBot.SubBot;
 using MasterDig.Inventory;
@@ -13,8 +14,11 @@ namespace MasterDig
 {
     public partial class MasterDig : ASubBot, IPlugin
     {
+        IBlockDrawer generatorDrawer;
+
         private void Generate(int width, int height)
         {
+            generatorDrawer = bot.Room.BlockDrawerPool.CreateBlockDrawer(1);
             Random random = new Random();
             Graphics.Tools.Noise.Primitive.SimplexPerlin noise = new Graphics.Tools.Noise.Primitive.SimplexPerlin(random.Next(), NoiseQuality.Best);
             BlockMap blockMap = new BlockMap(bot, width, height);
@@ -104,11 +108,27 @@ namespace MasterDig
                 {
                     if (blockMap.getBlock(0, x, y) != null)
                     {
-                        bot.Room.setBlock(x, y, blockMap.getBlock(0, x, y));
+                        IBlock block = blockMap.getBlock(0, x, y);
+                        generatorDrawer.PlaceBlock(x, y, block);
+                        IBlock background = null;
+                        switch (block.Id)
+                        {
+                            case 197:
+                                background = new NormalBlock(574, 1);
+                                break;
+                            case 21:
+                                background = new NormalBlock(630, 1);
+                                break;
+                            default:
+                                background = new NormalBlock(584, 1);
+                                break;
+                        }
+                        generatorDrawer.PlaceBlock(x, y, background);
                         resetBlockHardness(x, y, blockMap.getBlock(0, x, y).Id);
                     }
                 }
             }
+            generatorDrawer.Start();
         }
     }
 }

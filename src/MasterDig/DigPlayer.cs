@@ -37,7 +37,7 @@ namespace MasterDig
 
         public void Save()
         {
-            Pair<IFormatter, Stream> writeStuff = inventory.Save(@"data\" + player.Name);
+            Pair<IFormatter, Stream> writeStuff = inventory.Save(@"data\" + player.Name + ".data");
             writeStuff.first.Serialize(writeStuff.second, digXp);
             writeStuff.first.Serialize(writeStuff.second, digMoney);
             writeStuff.second.Close();
@@ -48,7 +48,7 @@ namespace MasterDig
             if (File.Exists(@"data\" + player.Name))
             {
                 digLevel_ = 0;
-                Pair<IFormatter, Stream> writeStuff = inventory.Load(@"data\" + player.Name);
+                Pair<IFormatter, Stream> writeStuff = inventory.Load(@"data\" + player.Name + ".data");
                 digXp = (int)writeStuff.first.Deserialize(writeStuff.second);
                 digMoney_ = (int)writeStuff.first.Deserialize(writeStuff.second);
                 writeStuff.second.Close();

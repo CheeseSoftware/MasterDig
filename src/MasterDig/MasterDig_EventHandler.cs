@@ -47,6 +47,8 @@ namespace MasterDig
             // Starts the BlockDrawer.
             blockDrawer.Start();
 
+            EnableTick(10);
+
             // Adds the SubBot to the SubBot handler so the SubBot will get callbacks.
             bot.SubBotHandler.AddSubBot(this, true);
         }
@@ -72,17 +74,10 @@ namespace MasterDig
             switch (m.Type)
             {
                 case "init":
-                    //Generate(m.GetInt(10), m.GetInt(11));
-                    digHardness = new float[bot.Room.Width, bot.Room.Height];
-
-                    resetDigHardness();
-                    break;
-
                 case "reset":
                     digHardness = new float[bot.Room.Width, bot.Room.Height];
                     resetDigHardness();
                     break;
-
                 case "m":
                     {
                         int userId = m.GetInt(0);
@@ -95,18 +90,20 @@ namespace MasterDig
                         float horizontal = m.GetFloat(7);
                         float vertical = m.GetFloat(8);
                         int Coins = m.GetInt(9);
-                        // bool purple = (bot.isBB) ? false : m.GetBoolean(10);
-                        //bool hasLevitation = (bot.isBB) ? false : m.GetBoolean(11);
 
                         int blockX = (int)(playerPosX / 16 + 0.5);
                         int blockY = (int)(playerPosY / 16 + 0.5);
 
                         IPlayer player = bot.Room.getPlayer(userId);
-                        if (player == null)
+                        if (player == null || player.IsGod || player.IsMod)
                             return;
 
-                        int digRange = 2;
-                        int digStrength = 2;
+                        if (!player.HasMetadata("digplayer"))
+                            player.SetMetadata("digplayer", new DigPlayer(player));
+                        DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
+
+                        int digRange = digPlayer.digRange;
+                        int digStrength = digPlayer.digStrength;
 
                         int blockId = (bot.Room.getBlock(0, blockX + (int)horizontal, blockY + (int)vertical).Id);
                         if (isDigable(blockId))//(blockId >= Skylight.BlockIds.Blocks.Sand.BROWN - 5 && blockId <= Skylight.BlockIds.Blocks.Sand.BROWN)
@@ -118,21 +115,9 @@ namespace MasterDig
                                 {
                                     for (int y = (vertical == 1) ? -1 : -digRange + 1; y < ((vertical == -1) ? 2 : digRange); y++)
                                     {
-                                        Console.WriteLine("snor är :" + x.ToString() + "    och skit är: " + y.ToString());
-
-
-                                        if (true)//(blockId >= Skylight.BlockIds.Blocks.Sand.BROWN - 5 && blockId <= Skylight.BlockIds.Blocks.Sand.BROWN)
-                                        {
-                                            float distance = (float)Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-                                            //float distanceB = (float)Math.Sqrt(Math.Pow(x - horizontal, 2) + Math.Pow(y - vertical, 2))*1.5F;
-
-                                            //float distance = (distanceA < distanceB)? distanceA:distanceB;
-
-                                            //if (distance == 0)
-                                            //    DigBlock(blockX + x + (int)Math.Ceiling(horizontal), blockY + y + (int)Math.Ceiling(vertical), player, player.digStrength, false);
-                                            if (distance <= 1.41421357 * (digRange - 1) || distance < 1.4142)
-                                                DigBlock(blockX + x + (int)Math.Ceiling(horizontal), blockY + y + (int)Math.Ceiling(vertical), player, (digRange - distance) * digStrength, false);
-                                        }
+                                        float distance = (float)Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+                                        if (distance <= 1.41421357 * (digRange - 1) || distance < 1.4142)
+                                            DigBlock(blockX + x + (int)Math.Ceiling(horizontal), blockY + y + (int)Math.Ceiling(vertical), player, (digRange - distance) * digStrength, false);
                                     }
                                 }
                                 return;
@@ -166,182 +151,130 @@ namespace MasterDig
         {
             if (cmdSource is IPlayer && (IPlayer)cmdSource != null)
             {
-                IPlayer normalPlayer = (IPlayer)cmdSource;
-                DigPlayer player;
-                if (digPlayers.TryGetValue(normalPlayer, out player) && player != null)
-                {
+                IPlayer player = (IPlayer)cmdSource;
+                if (!player.HasMetadata("digplayer"))
+                    player.SetMetadata("digplayer", new DigPlayer(player));
+                DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
 
-                    switch (args[0])
-                    {
-                        case "digcommands":
-                            cmdSource.Reply("commands: !xp, !level, !inventory, !xpleft, !buy <item> <amount>, !sell <item> <amount>, ");
-                            break;
-                        case "generate":
-                            if (normalPlayer.IsOp)
+                switch (cmd)
+                {
+                    case "digcommands":
+                        cmdSource.Reply("commands: !xp, !level, !inventory, !xpleft, !buy <item> <amount>, !sell <item> <amount>, ");
+                        break;
+                    case "generate":
+                        if (player.IsOp)
+                        {
+                            digHardness = new float[bot.Room.Width, bot.Room.Height];
+                            Generate(bot.Room.Width, bot.Room.Height);
+                        }
+                        break;
+                    case "givexp":
+                        if (player.IsOp && args.Length >= 2)
+                        {
+                            IPlayer receiver = bot.Room.getPlayer(args[0]);
+                            if (receiver != null)
                             {
-                                digHardness = new float[bot.Room.Width, bot.Room.Height];
-                                Generate(bot.Room.Width, bot.Room.Height);
+                                int xp = Int32.Parse(args[1]);
+                                if (!receiver.HasMetadata("digplayer"))
+                                    receiver.SetMetadata("digplayer", new DigPlayer(receiver));
+                                DigPlayer receiverDigPlayer = (DigPlayer)receiver.GetMetadata("digplayer");
+                                receiverDigPlayer.digXp += xp;
                             }
-                            break;
-                        /*case "givexp":
-                            if (normalPlayer.IsOp && args.Length >= 3)
+                            else
+                                player.Reply("That player doesn't exist.");
+                        }
+                        else
+                            player.Reply("Usage: !givexp <player> <xp>");
+                        break;
+                    case "xp":
+                        player.Reply("XP: " + digPlayer.digXp);
+                        break;
+                    case "xpleft":
+                        player.Reply("You need " + (digPlayer.xpRequired_ - digPlayer.digXp).ToString() + " XP for level " + (digPlayer.digLevel + 1).ToString());
+                        break;
+                    case "level":
+                        player.Reply("Level: " + digPlayer.digLevel);
+                        break;
+                    case "inventory":
+                        player.Reply(digPlayer.inventory.ToString());
+                        break;
+                    case "save":
+                        digPlayer.Save();
+                        break;
+                    case "setshop":
+                        if (player.IsOp)
+                        {
+                            Shop.SetLocation(player.BlockX, player.BlockY);
+                            player.Reply("Shop set at X:" + player.BlockX + " Y:" + player.BlockY);
+                            bot.Room.setBlock(player.BlockX, player.BlockY, new NormalBlock(Skylight.BlockIds.Blocks.Pirate.CHEST, 0));
+                        }
+                        break;
+                    case "money":
+                        player.Reply("Money: " + digPlayer.digMoney);
+                        break;
+                    case "buy":
+                        if (player.BlockX > Shop.xPos - 2 && player.BlockX < Shop.xPos + 2 && player.BlockY > Shop.yPos - 2 && player.BlockY < Shop.yPos + 2)
+                        {
+                            if (args.Length > 1)
                             {
-                                DigPlayer receiver;
-                                lock (bot.playerList)
+                                if (DigBlockMap.itemTranslator.ContainsKey(args[1].ToLower()))
                                 {
-                                    if (bot.nameList.ContainsKey(args[1]))
+                                    InventoryItem item = DigBlockMap.itemTranslator[args[1].ToLower()];
+                                    int itemPrice = Shop.GetBuyPrice(item);
+
+                                    int amount = 1;
+                                    if (args.Length >= 3)
+                                        int.TryParse(args[2], out amount);
+                                    if (digPlayer.digMoney >= (itemPrice * amount))
                                     {
-                                        receiver = bot.playerList[bot.nameList[args[1]]];
+                                        digPlayer.digMoney -= itemPrice;
+                                        digPlayer.inventory.AddItem(new InventoryItem(item.GetData()), amount);
+                                        player.Reply("Item bought!");
                                     }
                                     else
-                                    {
-                                        break;
-                                    }
+                                        player.Reply("You do not have enough money.");
                                 }
-
-                                int xp = Int32.Parse(args[2]);
-
-                                receiver.digXp += xp;
-
+                                else
+                                    player.Reply("The requested item does not exist.");
                             }
-                            break;
-
-                        //case "cheat":
-
-                        case "xp":
-                            lock (bot.playerList)
-                                bot.connection.Send("say", name + ": Your xp: " + bot.playerList[userId].digXp);
-                            break;
-                        case "xpleft":
-                            lock (bot.playerList)
-                                bot.connection.Send("say", name + ": You need" + (bot.playerList[userId].xpRequired_ - bot.playerList[userId].digXp).ToString() + " for level " + bot.playerList[userId].digLevel.ToString());
-                            break;
-                        case "level":
-                            lock (bot.playerList)
-                                bot.connection.Send("say", name + ": Level: " + bot.playerList[userId].digLevel);
-                            break;
-                        case "inventory":
+                            else
+                                player.Reply("Please specify what you want to buy.");
+                        }
+                        else
+                            player.Reply("You aren't near the shop.");
+                        break;
+                    case "sell":
+                        if (player.BlockX > Shop.xPos - 2 && player.BlockX < Shop.xPos + 2 && player.BlockY > Shop.yPos - 2 && player.BlockY < Shop.yPos + 2)
+                        {
+                            if (args.Length > 1)
                             {
-                                lock (bot.playerList)
-                                    bot.connection.Send("say", name + ": " + bot.playerList[userId].inventory.ToString());
-                            }
-                            break;
-                        case "save":
-                            {
-                                lock (bot.playerList)
-                                    bot.playerList[userId].Save();
-                            }
-                            break;
-
-                        case "setshop":
-                            {
-                                lock (bot.playerList)
+                                string itemName = args[1].ToLower();
+                                if (DigBlockMap.itemTranslator.ContainsKey(itemName))
                                 {
-                                    int x = bot.playerList[userId].blockX;
-                                    int y = bot.playerList[userId].blockY;
-                                    Shop.SetLocation(x, y);
-                                    bot.connection.Send("say", "Shop set at " + x + " " + y);
-                                    bot.Room.DrawBlock(Block.CreateBlock(0, x, y, 9, 0));
-                                }
-                            }
-                            break;
-                        case "money":
-                            {
-                                lock (bot.playerList)
-                                    bot.connection.Send("say", name + ": Money: " + bot.playerList[userId].digMoney);
-                            }
-                            break;
-                        case "setmoney":
-                            {
-                            }
-                            break;
-                        case "buy":
-                            {
-                                lock (bot.playerList)
-                                {
-                                    BotPlayer p = bot.playerList[userId];
-                                    if (p.blockX > Shop.xPos - 2 && p.blockX < Shop.xPos + 2)
+                                    InventoryItem item = DigBlockMap.itemTranslator[itemName];
+                                    int itemSellPrice = Shop.GetSellPrice(item);
+                                    int amount = 1;
+                                    if (args.Length >= 3)
+                                        int.TryParse(args[2], out amount);
+                                    if (digPlayer.inventory.Contains(item) != -1 && digPlayer.inventory.GetItemCount(item) >= amount)
                                     {
-                                        if (p.blockY > Shop.yPos - 2 && p.blockY < Shop.yPos + 2)
-                                        {
-                                            if (args.Length > 1)
-                                            {
-                                                if (DigBlockMap.itemTranslator.ContainsKey(args[1].ToLower()))
-                                                {
-                                                    InventoryItem item = DigBlockMap.itemTranslator[args[1].ToLower()];
-                                                    int itemPrice = Shop.GetBuyPrice(item);
-
-                                                    int amount = 1;
-                                                    if (args.Length >= 3)
-                                                        int.TryParse(args[2], out amount);
-                                                    if (p.digMoney >= (itemPrice * amount))
-                                                    {
-                                                        p.digMoney -= itemPrice;
-                                                        p.inventory.AddItem(new InventoryItem(item.GetData()), amount);
-                                                        bot.connection.Send("say", "Item bought!");
-                                                    }
-                                                    else
-                                                        bot.connection.Send("say", name + ": You do not have enough money.");
-                                                }
-                                                else
-                                                    bot.connection.Send("say", name + ": The requested item does not exist.");
-                                            }
-                                            else
-                                                bot.connection.Send("say", name + ": Please specify what you want to buy.");
-                                        }
+                                        digPlayer.digMoney += itemSellPrice * amount;
+                                        if (!digPlayer.inventory.RemoveItem(item, amount))
+                                            throw new Exception("Could not remove item?D:");
+                                        player.Reply("Item sold! You received " + (itemSellPrice * amount) + " money.");
                                     }
-                                    bot.connection.Send("say", name + ": You aren't near the shop.");
+                                    else
+                                        player.Reply("You do not have enough of that item.");
                                 }
+                                else
+                                    player.Reply("The item does not exist.");
                             }
-                            break;
-                        case "sell":
-                            {
-                                lock (bot.playerList)
-                                {
-                                    BotPlayer p = bot.playerList[userId];
-                                    if (p.blockX > Shop.xPos - 2 && p.blockX < Shop.xPos + 2)
-                                    {
-                                        if (p.blockY > Shop.yPos - 2 && p.blockY < Shop.yPos + 2)
-                                        {
-                                            if (args.Length > 1)
-                                            {
-                                                string itemName = args[1].ToLower();
-                                                if (DigBlockMap.itemTranslator.ContainsKey(itemName))
-                                                {
-                                                    InventoryItem item = DigBlockMap.itemTranslator[itemName];
-                                                    int itemSellPrice = Shop.GetSellPrice(item);
-                                                    int amount = 1;
-                                                    if (args.Length >= 3)
-                                                        int.TryParse(args[2], out amount);
-                                                    if (p.inventory.Contains(item) != -1 && p.inventory.GetItemCount(item) >= amount)
-                                                    {
-                                                        p.digMoney += itemSellPrice * amount;
-                                                        if (!p.inventory.RemoveItem(item, amount))
-                                                            throw new Exception("Could not remove item?D:");
-                                                        bot.connection.Send("say", name + ": Item sold! You received " + (itemSellPrice * amount) + " money.");
-                                                    }
-                                                    else
-                                                        bot.connection.Send("say", name + ": You do not have enough of that item.");
-                                                }
-                                                else
-                                                    bot.connection.Send("say", name + ": The item does not exist.");
-                                            }
-                                            else
-                                                bot.connection.Send("say", name + ": Please specify what you want to sell.");
-                                        }
-                                    }
-                                    bot.connection.Send("say", name + ": You aren't near the shop.");
-                                }
-                            }
-                            break;
-
-                        case "!placestones":
-                            {
-
-                            }
-                            break;*/
-
-                    }
+                            else
+                                player.Reply("Please specify what you want to sell.");
+                        }
+                        else
+                            player.Reply("You aren't near the shop.");
+                        break;
                 }
             }
         }
