@@ -23,6 +23,7 @@ namespace MasterDig
         protected bool betaDig = false;
         protected bool fastDig = true;
         protected IPlayer player;
+        private object saveloadLockObject = new object();
 
         public DigPlayer(IPlayer player)
         {
@@ -37,18 +38,27 @@ namespace MasterDig
 
         public void Save()
         {
-            Pair<IFormatter, Stream> writeStuff = inventory.Save(@"data\" + player.Name + ".data");
-            writeStuff.first.Serialize(writeStuff.second, digXp);
-            writeStuff.first.Serialize(writeStuff.second, digMoney);
-            writeStuff.second.Close();
+            lock (saveloadLockObject)
+            {
+                string path = @"data\" + player.Name;
+                if (!File.Exists(path))
+                    File.Create(path);
+                Pair<IFormatter, Stream> writeStuff = inventory.Save(path);
+                writeStuff.first.Serialize(writeStuff.second, digXp);
+                writeStuff.first.Serialize(writeStuff.second, digMoney);
+                writeStuff.second.Close();
+            }
         }
 
         public void Load()
         {
-            if (File.Exists(@"data\" + player.Name))
+            lock (saveloadLockObject)
             {
+                string path = @"data\" + player.Name;
+                if (!File.Exists(path))
+                    File.Create(path);
                 digLevel_ = 0;
-                Pair<IFormatter, Stream> writeStuff = inventory.Load(@"data\" + player.Name + ".data");
+                Pair<IFormatter, Stream> writeStuff = inventory.Load(path);
                 digXp = (int)writeStuff.first.Deserialize(writeStuff.second);
                 digMoney_ = (int)writeStuff.first.Deserialize(writeStuff.second);
                 writeStuff.second.Close();
@@ -64,7 +74,7 @@ namespace MasterDig
 
         public int digMoney { get { return digMoney_; } set { digMoney_ = value; } }
 
-        public int digStrength { get { return 1 + digLevel/4; } }
+        public int digStrength { get { return 1 + digLevel / 4; } }
 
         private static int getXpRequired(int level) { return BetterMath.Fibonacci(level + 2) * 8; }
 

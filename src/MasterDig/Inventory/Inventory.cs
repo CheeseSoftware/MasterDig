@@ -12,7 +12,6 @@ namespace MasterDig.Inventory
 {
     public class Inventory
     {
-        private object saveloadLockObject = new object();
         private Dictionary<int, Pair<InventoryItem, int>> storedItems;
         public int capacity { get; set; }
 
@@ -181,31 +180,21 @@ namespace MasterDig.Inventory
 
         public Pair<IFormatter, Stream> Save(string path)
         {
-            lock (saveloadLockObject)
-            {
-                if (!File.Exists(path))
-                    File.Create(path);
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
-                formatter.Serialize(stream, (string)"Version: 0");
-                formatter.Serialize(stream, storedItems);
-                return new Pair<IFormatter, Stream>(formatter, stream);
-            }
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            formatter.Serialize(stream, (string)"Version: 0");
+            formatter.Serialize(stream, storedItems);
+            return new Pair<IFormatter, Stream>(formatter, stream);
         }
 
         public Pair<IFormatter, Stream> Load(string path)
         {
-            lock (saveloadLockObject)
-            {
-                if (!File.Exists(path))
-                    File.Create(path);
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
-                string version = (string)formatter.Deserialize(stream);
-                //Console.WriteLine("Loaded inventory version: " + version);
-                storedItems = (Dictionary<int, Pair<InventoryItem, int>>)formatter.Deserialize(stream);
-                return new Pair<IFormatter, Stream>(formatter, stream);
-            }
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            string version = (string)formatter.Deserialize(stream);
+            //Console.WriteLine("Loaded inventory version: " + version);
+            storedItems = (Dictionary<int, Pair<InventoryItem, int>>)formatter.Deserialize(stream);
+            return new Pair<IFormatter, Stream>(formatter, stream);
         }
     }
 
