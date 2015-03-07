@@ -158,8 +158,9 @@ namespace MasterDig
 
                 switch (cmd)
                 {
+                    case "help":
                     case "digcommands":
-                        cmdSource.Reply("commands: !xp, !level, !inventory, !xpleft, !buy <item> <amount>, !sell <item> <amount>, ");
+                        player.Reply("commands: !xp, !level, !inventory, !xpleft, !buy, !sell");
                         break;
                     case "generate":
                         if (player.IsOp)

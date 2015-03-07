@@ -38,6 +38,7 @@ namespace MasterDig
 
         public void Save()
         {
+            return;
             lock (saveloadLockObject)
             {
                 string path = @"data\" + player.Name;
@@ -52,6 +53,7 @@ namespace MasterDig
 
         public void Load()
         {
+            return;
             lock (saveloadLockObject)
             {
                 string path = @"data\" + player.Name;

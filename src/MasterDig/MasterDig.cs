@@ -122,24 +122,27 @@ namespace MasterDig
 
         private void resetBlockHardness(int x, int y, int blockId)
         {
-            if (x < 0 || y < 0 || x >= bot.Room.Width || y >= bot.Room.Height)
+            if (bot.Connected)
+            {
+                if (x < 0 || y < 0 || x >= bot.Room.Width || y >= bot.Room.Height)
+
+                    if (digHardness == null)
+                    {
+                        digHardness = new float[bot.Room.Width, bot.Room.Height];
+                    }
 
                 if (digHardness == null)
+                    return;
+
+                if (isDigable(blockId))
                 {
-                    digHardness = new float[bot.Room.Width, bot.Room.Height];
+                    digHardness[x, y] = 1F;
                 }
-
-            if (digHardness == null)
-                return;
-
-            if (isDigable(blockId))
-            {
-                digHardness[x, y] = 1F;
-            }
-            else if (DigBlockMap.blockTranslator.ContainsKey(blockId))
-            {
-                if (Shop.shopInventory.ContainsKey(DigBlockMap.blockTranslator[blockId].GetName()))
-                    digHardness[x, y] = Convert.ToInt32(Shop.shopInventory[DigBlockMap.blockTranslator[blockId].GetName()].GetDataAt(4));
+                else if (DigBlockMap.blockTranslator.ContainsKey(blockId))
+                {
+                    if (Shop.shopInventory.ContainsKey(DigBlockMap.blockTranslator[blockId].GetName()))
+                        digHardness[x, y] = Convert.ToInt32(Shop.shopInventory[DigBlockMap.blockTranslator[blockId].GetName()].GetDataAt(4));
+                }
             }
         }
 
