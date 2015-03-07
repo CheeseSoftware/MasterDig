@@ -51,7 +51,7 @@ namespace MasterDig
             {
                 if (DigBlockMap.blockTranslator.ContainsKey(block.Id))
                 {
-                    blockId = 4;
+                    blockId = 414;
                     InventoryItem temp = DigBlockMap.blockTranslator[block.Id];
 
                     if(!player.HasMetadata("digplayer"))
@@ -79,7 +79,7 @@ namespace MasterDig
             switch (block.Id)
             {
                 case BlockIds.Blocks.Sand.BROWN:
-                    blockId = 4;
+                    blockId = 414;
                     break;
 
                 case BlockIds.Blocks.JungleRuins.BLUE:

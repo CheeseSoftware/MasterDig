@@ -33,18 +33,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="libnoise">
-      <HintPath>..\libnoise.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\AppData\Roaming\Skype\My Skype Received Files\libnoise.dll</HintPath>
     </Reference>
     <Reference Include="MasterBotLib">
-      <HintPath>..\MasterBotLib.dll</HintPath>
+      <HintPath>..\..\..\MasterBot\bin\Release\MasterBotLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PlayerIOClient">
-      <HintPath>..\PlayerIOClient.dll</HintPath>
+      <HintPath>..\..\..\MasterBot\bin\Release\PlayerIOClient.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Skylight">
-      <HintPath>..\Skylight.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\AppData\Roaming\Skype\My Skype Received Files\Skylight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
