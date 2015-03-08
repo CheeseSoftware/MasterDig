@@ -36,11 +36,11 @@
       <HintPath>..\..\..\..\..\..\..\AppData\Roaming\Skype\My Skype Received Files\libnoise.dll</HintPath>
     </Reference>
     <Reference Include="MasterBotLib">
-      <HintPath>..\..\..\MasterBot\bin\Release\MasterBotLib.dll</HintPath>
+      <HintPath>..\..\..\MasterBot\src\MasterBotLib\bin\Debug\MasterBotLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PlayerIOClient">
-      <HintPath>..\..\..\MasterBot\bin\Release\PlayerIOClient.dll</HintPath>
+      <HintPath>..\..\..\MasterBot\src\PlayerIOClient.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Skylight">

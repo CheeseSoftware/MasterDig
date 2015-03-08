@@ -18,6 +18,8 @@ namespace MasterDig
 
         private void Generate(int width, int height)
         {
+            int centerHoleDiameter = 10;
+
             generatorDrawer = bot.Room.BlockDrawerPool.CreateBlockDrawer(1);
             Random random = new Random();
             Graphics.Tools.Noise.Primitive.SimplexPerlin noise = new Graphics.Tools.Noise.Primitive.SimplexPerlin(random.Next(), NoiseQuality.Best);
@@ -100,7 +102,20 @@ namespace MasterDig
                 blockQueue.Enqueue(block);
             }
 
+            //Make hole in center for the shop
+            for (int x = width / 2 - (centerHoleDiameter / 2 + 1); x < width / 2 + centerHoleDiameter / 2; x++)
+            {
+                for (int y = height / 2 - (centerHoleDiameter / 2 + 1); y < height / 2 + centerHoleDiameter / 2; y++)
+                {
+                    blockMap.setBlock(x, y, new NormalBlock(414, 0));
+
+                }
+            }
+
             blockMap.setBlock(width / 2 - 1, height / 2 - 1, new NormalBlock(255, 0));
+            Shop.SetLocation(width / 2 - 1, height / 2 - 2);
+            blockMap.setBlock(width / 2 - 1, height / 2 - 2, new NormalBlock(Skylight.BlockIds.Blocks.Pirate.CHEST, 0));
+
 
             for (int x = 1; x < width - 1; x++)
             {

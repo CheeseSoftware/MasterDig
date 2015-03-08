@@ -165,6 +165,7 @@ namespace MasterDig
                     case "generate":
                         if (player.IsOp)
                         {
+                            bot.Say("Generating new map..");
                             digHardness = new float[bot.Room.Width, bot.Room.Height];
                             Generate(bot.Room.Width, bot.Room.Height);
                         }
