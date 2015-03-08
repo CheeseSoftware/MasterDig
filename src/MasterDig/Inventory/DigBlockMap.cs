@@ -36,7 +36,7 @@ namespace MasterDig.Inventory
                 8, //SHOPBUY
                 3, //SHOPSELL
                 14, //HARDNESS
-                8  //LEVELREQ
+                6  //LEVELREQ
             }));
 
 
@@ -46,7 +46,7 @@ namespace MasterDig.Inventory
                 15, //SHOPBUY
                 14, //SHOPSELL
                 18, //HARDNESS
-                16  //LEVELREQ
+                10  //LEVELREQ
             }));
 
             blockTranslator.Add((int)Blocks.Emerald, new InventoryItem(new object[]{
@@ -55,7 +55,7 @@ namespace MasterDig.Inventory
                 5, //SHOPBUY
                 0, //SHOPSELL
                 24, //HARDNESS
-                24  //LEVELREQ
+                15  //LEVELREQ
             }));
 
             blockTranslator.Add((int)Blocks.Ruby, new InventoryItem(new object[]{
@@ -64,7 +64,7 @@ namespace MasterDig.Inventory
                 5, //SHOPBUY
                 0, //SHOPSELL
                 30, //HARDNESS
-                32  //LEVELREQ
+                20  //LEVELREQ
             }));
 
             blockTranslator.Add((int)Blocks.Sapphire, new InventoryItem(new object[]{
@@ -73,7 +73,7 @@ namespace MasterDig.Inventory
                 5, //SHOPBUY
                 0, //SHOPSELL
                 36, //HARDNESS
-                40  //LEVELREQ
+                25  //LEVELREQ
             }));
 
             blockTranslator.Add((int)Blocks.Diamond, new InventoryItem(new object[]{
@@ -82,7 +82,7 @@ namespace MasterDig.Inventory
                 5, //SHOPBUY
                 0, //SHOPSELL
                 56, //HARDNESS
-                48  //LEVELREQ
+                30  //LEVELREQ
             }));
 
 

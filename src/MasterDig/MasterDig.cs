@@ -79,6 +79,7 @@ namespace MasterDig
             switch (block.Id)
             {
                 case BlockIds.Blocks.Sand.BROWN:
+                case BlockIds.Blocks.Sand.GRAY:
                     blockId = 414;
                     break;
 
@@ -136,7 +137,10 @@ namespace MasterDig
 
                 if (isDigable(blockId))
                 {
-                    digHardness[x, y] = 1F;
+                    if (blockId == Skylight.BlockIds.Blocks.Sand.BROWN)
+                        digHardness[x, y] = 1F;
+                    else
+                        digHardness[x, y] = 5F;
                 }
                 else if (DigBlockMap.blockTranslator.ContainsKey(blockId))
                 {

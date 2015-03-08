@@ -50,6 +50,9 @@ namespace MasterDig
                     else if (noise.GetValue(x * 0.015625F, y * 0.015625F, 128) > 1 - 0.75 * distanceFromCenter)
                         blockMap.setBlock(x, y, new NormalBlock((int)Blocks.Stone, 0));
 
+                    else if (distanceFromCenter > 0.25 * (bot.Room.Height + bot.Room.Width))
+                        blockMap.setBlock(x, y, new NormalBlock((int)Skylight.BlockIds.Blocks.Sand.GRAY, 0));
+
                     else// if (noise.GetValue(x * 0.015625F, y * 0.015625F, 160) > 0)
                         blockMap.setBlock(x, y, new NormalBlock(Skylight.BlockIds.Blocks.Sand.BROWN, 0));
 

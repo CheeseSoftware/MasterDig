@@ -16,6 +16,9 @@ namespace MasterDig
     public partial class MasterDig : ASubBot, IPlugin
     {
 
+        HashSet<IPlayer> playersToSave = new HashSet<IPlayer>();
+        Queue<IPlayer> playersToSaveQueue = new Queue<IPlayer>();
+
         public MasterDig()
             : base(null)
         {
@@ -120,6 +123,7 @@ namespace MasterDig
                                             DigBlock(blockX + x + (int)Math.Ceiling(horizontal), blockY + y + (int)Math.Ceiling(vertical), player, (digRange - distance) * digStrength, false);
                                     }
                                 }
+                                AddUnsavedPlayer(player);
                                 return;
                             }
                         }
@@ -129,7 +133,7 @@ namespace MasterDig
 
                             blockId = bot.Room.getBlock(0, blockX, blockY).Id;
                             DigBlock(blockX, blockY, player, digStrength, true);
-
+                            AddUnsavedPlayer(player);
                         }
                     }
                     break;
@@ -156,11 +160,22 @@ namespace MasterDig
                     player.SetMetadata("digplayer", new DigPlayer(player));
                 DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
 
+                AddUnsavedPlayer(player);
+
                 switch (cmd)
                 {
+                    case "dig":
                     case "help":
+                    case "commands":
                     case "digcommands":
-                        player.Reply("commands: !xp, !level, !inventory, !xpleft, !buy, !sell");
+                        player.Reply("Here are the commands:");
+                        player.Reply("!xp, !level, !inventory, !xpleft");
+                        player.Reply("!buy, !sell, !money, !levelforores, !save");
+                        break;
+                    case "levelforores":
+                        player.Reply("stone: 0,   copper: 2,   iron: 6,");
+                        player.Reply("gold: 10,   emerald: 15,   ruby: 20,");
+                        player.Reply("ruby: 20,   sapphire: 25,   diamond: 30");
                         break;
                     case "generate":
                         if (player.IsOp)
@@ -201,6 +216,7 @@ namespace MasterDig
                         player.Reply(digPlayer.inventory.ToString());
                         break;
                     case "save":
+                        player.Reply("Saved!");
                         digPlayer.Save();
                         break;
                     case "setshop":
@@ -291,12 +307,42 @@ namespace MasterDig
             if (!bot.Room.HasCode)
                 return;
 
+            DigPlayer digPlayer = null;
+            lock (playersToSave)
+            {
+                
+                if (playersToSaveQueue.Count > 0)
+                {
+                    IPlayer player = playersToSaveQueue.Dequeue();
+                    playersToSave.Remove(player);
+
+                    digPlayer = (DigPlayer)player.GetMetadata("digplayer");
+                    
+                }
+            }
+            if (digPlayer != null)
+            {
+                digPlayer.Save();
+            }
+
             lock (dugBlocksToPlaceQueueLock)
             {
                 while (dugBlocksToPlaceQueue.Count > bot.Room.Width * bot.Room.Height / 20)
                 {
                     BlockWithPos block = dugBlocksToPlaceQueue.Dequeue();
                     bot.Room.setBlock(block.X, block.Y, block.Block);
+                }
+            }
+        }
+
+        public void AddUnsavedPlayer(IPlayer player)
+        {
+            lock (playersToSave)
+            {
+                if (!playersToSave.Contains(player))
+                {
+                    playersToSave.Add(player);
+                    playersToSaveQueue.Enqueue(player);
                 }
             }
         }
