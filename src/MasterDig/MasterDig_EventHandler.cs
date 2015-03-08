@@ -50,7 +50,7 @@ namespace MasterDig
             // Starts the BlockDrawer.
             blockDrawer.Start();
 
-            EnableTick(10);
+            EnableTick(1000);
 
             // Adds the SubBot to the SubBot handler so the SubBot will get callbacks.
             bot.SubBotHandler.AddSubBot(this, true);

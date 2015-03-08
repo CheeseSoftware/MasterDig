@@ -54,24 +54,24 @@ namespace MasterDig
                     blockId = 414;
                     InventoryItem temp = DigBlockMap.blockTranslator[block.Id];
 
-                    if(!player.HasMetadata("digplayer"))
+                    if (!player.HasMetadata("digplayer"))
                         player.SetMetadata("digplayer", new DigPlayer(player));
                     DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
 
                     if (digPlayer.digLevel >= Convert.ToInt32(temp.GetDataAt(5)))
-                     {
-                         //Shop.shopInventory[DigBlockMap.blockTranslator[block.blockId]].GetDataAt(3)//för hårdhet
-                         if (digHardness[x, y] <= digStrength)
-                         {
-                             InventoryItem newsak = new InventoryItem(temp.GetData());
-                             digPlayer.inventory.AddItem(newsak, 1);
-                             digPlayer.digXp += Convert.ToInt32(temp.GetDataAt(1));
-                         }
-                     }
-                     else
-                     {
-                         return;
-                     }
+                    {
+                        //Shop.shopInventory[DigBlockMap.blockTranslator[block.blockId]].GetDataAt(3)//för hårdhet
+                        if (digHardness[x, y] <= digStrength)
+                        {
+                            InventoryItem newsak = new InventoryItem(temp.GetData());
+                            digPlayer.inventory.AddItem(newsak, 1);
+                            digPlayer.digXp += Convert.ToInt32(temp.GetDataAt(1));
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
 
                 }
             }

@@ -178,23 +178,20 @@ namespace MasterDig.Inventory
             }
         }
 
-        public Pair<IFormatter, Stream> Save(string path)
+        public void Save(string path)
         {
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            formatter.Serialize(stream, (string)"Version: 0");
             formatter.Serialize(stream, storedItems);
-            return new Pair<IFormatter, Stream>(formatter, stream);
+            stream.Close();
         }
 
-        public Pair<IFormatter, Stream> Load(string path)
+        public void Load(string path)
         {
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            string version = (string)formatter.Deserialize(stream);
-            //Console.WriteLine("Loaded inventory version: " + version);
             storedItems = (Dictionary<int, Pair<InventoryItem, int>>)formatter.Deserialize(stream);
-            return new Pair<IFormatter, Stream>(formatter, stream);
+            stream.Close();
         }
     }
 

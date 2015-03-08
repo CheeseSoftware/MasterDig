@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using MasterBot;
 using MasterDig.Inventory;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MasterDig
 {
@@ -38,32 +39,51 @@ namespace MasterDig
 
         public void Save()
         {
-            return;
             lock (saveloadLockObject)
             {
-                string path = @"data\" + player.Name;
-                if (!File.Exists(path))
-                    File.Create(path);
-                Pair<IFormatter, Stream> writeStuff = inventory.Save(path);
-                writeStuff.first.Serialize(writeStuff.second, digXp);
-                writeStuff.first.Serialize(writeStuff.second, digMoney);
-                writeStuff.second.Close();
+                if (!Directory.Exists(@"data\)"))
+                    Directory.CreateDirectory(@"data\");
+                if (!Directory.Exists(@"data\inventories\)"))
+                    Directory.CreateDirectory(@"data\inventories\");
+
+                string inventoryPath = @"data\inventories\" + player.Name;
+                if (!File.Exists(inventoryPath))
+                    File.Create(inventoryPath).Close();
+                inventory.Save(inventoryPath);
+
+                string dataPath = @"data\" + player.Name;
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(dataPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                formatter.Serialize(stream, digXp);
+                formatter.Serialize(stream, digMoney);
+                stream.Close();
             }
         }
 
         public void Load()
         {
-            return;
             lock (saveloadLockObject)
             {
-                string path = @"data\" + player.Name;
-                if (!File.Exists(path))
-                    File.Create(path);
+                if (!Directory.Exists(@"data\)"))
+                    Directory.CreateDirectory(@"data\");
+                if (!Directory.Exists(@"data\inventories\)"))
+                    Directory.CreateDirectory(@"data\inventories\");
+
+                string inventoryPath = @"data\inventories\" + player.Name;
+                if (!File.Exists(inventoryPath))
+                    return;
+                inventory.Load(inventoryPath);
+
+                string dataPath = @"data\" + player.Name;
+                if (!File.Exists(dataPath))
+                    return;
+
                 digLevel_ = 0;
-                Pair<IFormatter, Stream> writeStuff = inventory.Load(path);
-                digXp = (int)writeStuff.first.Deserialize(writeStuff.second);
-                digMoney_ = (int)writeStuff.first.Deserialize(writeStuff.second);
-                writeStuff.second.Close();
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(dataPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                digXp = (int)formatter.Deserialize(stream);
+                digMoney_ = (int)formatter.Deserialize(stream);
+                stream.Close();
                 xpRequired = getXpRequired(digLevel);
             }
         }
