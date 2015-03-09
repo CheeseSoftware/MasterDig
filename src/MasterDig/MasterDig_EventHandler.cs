@@ -359,7 +359,7 @@ namespace MasterDig
                     int x = e.Current.first.X;
                     int y = e.Current.first.Y;
                     float strength = e.Current.second.Strength;
-                    List<BlockWithPos> blocksToRemove = new List<BlockWithPos>();
+                    List<Pair<BlockWithPos, double>> blocksToRemove = new List<Pair<BlockWithPos, double>>();
                     for(int xx = (int)(x - strength); xx < x + strength; xx++)
                     {
                         for (int yy = (int)(y - strength); yy < y + strength; yy++)
@@ -367,19 +367,22 @@ namespace MasterDig
                             double distanceFromCenter = Math.Sqrt(Math.Pow(x - xx, 2) + Math.Pow(y - yy, 2));
                             if (distanceFromCenter <= strength)
                             {
-                                bool shouldRemove = true;//(r.Next((int)strength * 10) > distanceFromCenter ? true : false);
+                                bool shouldRemove = (r.Next((int)((distanceFromCenter/strength)* 100)) <= 50 ? true : false);
                                 if (shouldRemove)
-                                    blocksToRemove.Add(new BlockWithPos(xx, yy, new NormalBlock(414, 0)));
+                                    blocksToRemove.Add(new Pair<BlockWithPos, double>(new BlockWithPos(xx, yy, new NormalBlock(414, 0)), distanceFromCenter));
+
 
                             }
                         }
                     }
+
+                    blocksToRemove.Sort((s1, s2) => s1.second.CompareTo(s2.second));
                     
                     while(blocksToRemove.Count > 0)
                     {
                         int i = r.Next(blocksToRemove.Count);
 
-                        bot.Room.setBlock(blocksToRemove[i].X, blocksToRemove[i].Y, blocksToRemove[i].Block);
+                        bot.Room.setBlock(blocksToRemove[i].first.X, blocksToRemove[i].first.Y, blocksToRemove[i].first.Block);
                         blocksToRemove.RemoveAt(i);
                     }
 
