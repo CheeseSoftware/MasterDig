@@ -169,9 +169,9 @@ namespace MasterDig
                     case "dynamite":
                         {
                             ItemDynamite dynamite = new ItemDynamite();
-                            //if (digPlayer.inventory.RemoveItem(dynamite, 1))
+                            if (digPlayer.inventory.RemoveItem(dynamite, 1) || player.IsGod)
                             {
-                                bot.Say(player.Name + " has placed dynamite! Hide!!");
+                                bot.Say(player.Name + " has placed a big barrel of dynamite! Hide!!");
                                 bot.Room.setBlock(player.BlockX, player.BlockY + 1, new NormalBlock(163, 0));
                                 dynamites.Add(
                                     new Pair<BlockPos, ItemDynamite>(new BlockPos(0, player.BlockX, player.BlockY + 1), dynamite)
@@ -351,23 +351,23 @@ namespace MasterDig
 
             Pair<BlockPos, ItemDynamite> toRemove = null;
             List<Pair<BlockPos, ItemDynamite>>.Enumerator e = dynamites.GetEnumerator();
-            while(e.MoveNext())
+            while (e.MoveNext())
             {
-                if((DateTime.Now - e.Current.second.DatePlaced).Seconds >= 5)
+                if ((DateTime.Now - e.Current.second.DatePlaced).Seconds >= 5)
                 {
                     Random r = new Random();
                     int x = e.Current.first.X;
                     int y = e.Current.first.Y;
                     float strength = e.Current.second.Strength;
                     List<Pair<BlockWithPos, double>> blocksToRemove = new List<Pair<BlockWithPos, double>>();
-                    for(int xx = (int)(x - strength); xx < x + strength; xx++)
+                    for (int xx = (int)(x - strength); xx < x + strength; xx++)
                     {
                         for (int yy = (int)(y - strength); yy < y + strength; yy++)
                         {
                             double distanceFromCenter = Math.Sqrt(Math.Pow(x - xx, 2) + Math.Pow(y - yy, 2));
                             if (distanceFromCenter <= strength)
                             {
-                                bool shouldRemove = (r.Next((int)((distanceFromCenter/strength)* 100)) <= 50 ? true : false);
+                                bool shouldRemove = (r.Next((int)((distanceFromCenter / strength) * 100)) <= 50 ? true : false);
                                 if (shouldRemove)
                                     blocksToRemove.Add(new Pair<BlockWithPos, double>(new BlockWithPos(xx, yy, new NormalBlock(414, 0)), distanceFromCenter));
 
@@ -377,14 +377,10 @@ namespace MasterDig
                     }
 
                     blocksToRemove.Sort((s1, s2) => s1.second.CompareTo(s2.second));
-                    
-                    while(blocksToRemove.Count > 0)
-                    {
-                        int i = r.Next(blocksToRemove.Count);
 
-                        bot.Room.setBlock(blocksToRemove[i].first.X, blocksToRemove[i].first.Y, blocksToRemove[i].first.Block);
-                        blocksToRemove.RemoveAt(i);
-                    }
+                    foreach (var block in blocksToRemove)
+                        DigBlock(block.first.X, block.first.Y, null, (int)Math.Floor(1/block.second*50)*((float)r.Next(100)/100+1), false, true);
+                    blocksToRemove.Clear();
 
 
                     toRemove = e.Current;

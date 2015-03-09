@@ -33,7 +33,7 @@ namespace MasterDig
                 return false;
         }
 
-        private void DigBlock(int x, int y, IPlayer player, float digStrength, bool mining)
+        private void DigBlock(int x, int y, IPlayer player, float digStrength, bool mining, bool explosion = false)
         {
             if (digHardness == null)
                 resetDigHardness();
@@ -79,6 +79,9 @@ namespace MasterDig
 
                 }
             }
+
+            if (explosion)
+                blockId = 414;
 
             switch (block.Id)
             {

@@ -9,7 +9,7 @@ namespace MasterDig.Inventory.InventoryItems
     class ItemDynamite : InventoryItem
     {
         public ItemDynamite()
-            : base(new object[] { "Dynamite", 0, 20, 15, (float)5, DateTime.Now})
+            : base(new object[] { "dynamite", 0, 60, 30, (float)15, DateTime.Now})
         {
             
         }

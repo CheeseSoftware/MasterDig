@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MasterDig.Inventory.InventoryItems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -92,6 +93,8 @@ namespace MasterDig.Inventory
             {
                 itemTranslator.Add(i.GetName(), i);
             }
+
+            itemTranslator.Add("dynamite", new ItemDynamite());
         }
     }
     public enum Blocks
