@@ -250,14 +250,14 @@ namespace MasterDig
                         {
                             if (args.Length > 1)
                             {
-                                if (DigBlockMap.itemTranslator.ContainsKey(args[1].ToLower()))
+                                if (DigBlockMap.itemTranslator.ContainsKey(args[0].ToLower()))
                                 {
-                                    InventoryItem item = DigBlockMap.itemTranslator[args[1].ToLower()];
+                                    InventoryItem item = DigBlockMap.itemTranslator[args[0].ToLower()];
                                     int itemPrice = Shop.GetBuyPrice(item);
 
                                     int amount = 1;
-                                    if (args.Length >= 3)
-                                        int.TryParse(args[2], out amount);
+                                    if (args.Length >= 2)
+                                        int.TryParse(args[1], out amount);
                                     if (digPlayer.digMoney >= (itemPrice * amount))
                                     {
                                         digPlayer.digMoney -= itemPrice;
@@ -281,14 +281,14 @@ namespace MasterDig
                         {
                             if (args.Length > 1)
                             {
-                                string itemName = args[1].ToLower();
+                                string itemName = args[0].ToLower();
                                 if (DigBlockMap.itemTranslator.ContainsKey(itemName))
                                 {
                                     InventoryItem item = DigBlockMap.itemTranslator[itemName];
                                     int itemSellPrice = Shop.GetSellPrice(item);
                                     int amount = 1;
-                                    if (args.Length >= 3)
-                                        int.TryParse(args[2], out amount);
+                                    if (args.Length >= 2)
+                                        int.TryParse(args[1], out amount);
                                     if (digPlayer.inventory.Contains(item) != -1 && digPlayer.inventory.GetItemCount(item) >= amount)
                                     {
                                         digPlayer.digMoney += itemSellPrice * amount;

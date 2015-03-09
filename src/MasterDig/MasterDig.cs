@@ -65,7 +65,11 @@ namespace MasterDig
                         {
                             InventoryItem newsak = new InventoryItem(temp.GetData());
                             digPlayer.inventory.AddItem(newsak, 1);
+                            int oldLevel = digPlayer.digLevel;
                             digPlayer.digXp += Convert.ToInt32(temp.GetDataAt(1));
+                            int newLevel = digPlayer.digLevel;
+                            if (newLevel > oldLevel)
+                                bot.Say(player.Name + " has leveled up to level " + newLevel + "!");
                         }
                     }
                     else
