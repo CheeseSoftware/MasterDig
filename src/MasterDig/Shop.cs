@@ -1,4 +1,5 @@
 ﻿using MasterDig.Inventory;
+using MasterDig.Inventory.InventoryItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace MasterDig
         public static Dictionary<string, InventoryItem> shopInventory = new Dictionary<string, InventoryItem>(DigBlockMap.itemTranslator);
         static Shop()
         {
-
+            shopInventory.Add("Dynamite", new ItemDynamite());
         }
 
         static public int GetBuyPrice(InventoryItem item)

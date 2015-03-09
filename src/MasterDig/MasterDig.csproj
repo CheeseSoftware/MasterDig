@@ -34,7 +34,7 @@
   <ItemGroup>
     <Reference Include="libnoise, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\AppData\Roaming\Skype\My Skype Received Files\libnoise.dll</HintPath>
+      <HintPath>..\..\..\MasterBot\src\MasterBot\bin\Debug\plugins\libnoise.dll</HintPath>
     </Reference>
     <Reference Include="MasterBotLib">
       <HintPath>..\..\..\MasterBot\src\MasterBotLib\bin\Debug\MasterBotLib.dll</HintPath>
@@ -69,6 +69,7 @@
     <Compile Include="Inventory\DigBlockMap.cs" />
     <Compile Include="Inventory\Inventory.cs" />
     <Compile Include="Inventory\InventoryItem.cs" />
+    <Compile Include="Inventory\InventoryItems\ItemDynamite.cs" />
     <Compile Include="Inventory\Key.cs" />
     <Compile Include="MasterDig.cs">
       <SubType>Component</SubType>

@@ -10,6 +10,7 @@ using System.Threading;
 using MasterBot.Room.Block;
 using System.Windows.Forms;
 using MasterDig.Inventory;
+using MasterDig.Inventory.InventoryItems;
 
 namespace MasterDig
 {
@@ -18,6 +19,7 @@ namespace MasterDig
 
         HashSet<IPlayer> playersToSave = new HashSet<IPlayer>();
         Queue<IPlayer> playersToSaveQueue = new Queue<IPlayer>();
+        List<Pair<BlockPos, ItemDynamite>> dynamites = new List<Pair<BlockPos, ItemDynamite>>();
 
         public MasterDig()
             : base(null)
@@ -164,6 +166,19 @@ namespace MasterDig
 
                 switch (cmd)
                 {
+                    case "dynamite":
+                        {
+                            ItemDynamite dynamite = new ItemDynamite();
+                            //if (digPlayer.inventory.RemoveItem(dynamite, 1))
+                            {
+                                bot.Say(player.Name + " has placed dynamite! Hide!!");
+                                bot.Room.setBlock(player.BlockX, player.BlockY + 1, new NormalBlock(163, 0));
+                                dynamites.Add(
+                                    new Pair<BlockPos, ItemDynamite>(new BlockPos(0, player.BlockX, player.BlockY + 1), dynamite)
+                                    );
+                            }
+                        }
+                        break;
                     case "dig":
                     case "help":
                     case "commands":
@@ -310,14 +325,14 @@ namespace MasterDig
             DigPlayer digPlayer = null;
             lock (playersToSave)
             {
-                
+
                 if (playersToSaveQueue.Count > 0)
                 {
                     IPlayer player = playersToSaveQueue.Dequeue();
                     playersToSave.Remove(player);
 
                     digPlayer = (DigPlayer)player.GetMetadata("digplayer");
-                    
+
                 }
             }
             if (digPlayer != null)
@@ -333,6 +348,48 @@ namespace MasterDig
                     bot.Room.setBlock(block.X, block.Y, block.Block);
                 }
             }
+
+            Pair<BlockPos, ItemDynamite> toRemove = null;
+            List<Pair<BlockPos, ItemDynamite>>.Enumerator e = dynamites.GetEnumerator();
+            while(e.MoveNext())
+            {
+                if((DateTime.Now - e.Current.second.DatePlaced).Seconds >= 5)
+                {
+                    Random r = new Random();
+                    int x = e.Current.first.X;
+                    int y = e.Current.first.Y;
+                    float strength = e.Current.second.Strength;
+                    List<BlockWithPos> blocksToRemove = new List<BlockWithPos>();
+                    for(int xx = (int)(x - strength); xx < x + strength; xx++)
+                    {
+                        for (int yy = (int)(y - strength); yy < y + strength; yy++)
+                        {
+                            double distanceFromCenter = Math.Sqrt(Math.Pow(x - xx, 2) + Math.Pow(y - yy, 2));
+                            if (distanceFromCenter <= strength)
+                            {
+                                bool shouldRemove = true;//(r.Next((int)strength * 10) > distanceFromCenter ? true : false);
+                                if (shouldRemove)
+                                    blocksToRemove.Add(new BlockWithPos(xx, yy, new NormalBlock(414, 0)));
+
+                            }
+                        }
+                    }
+                    
+                    while(blocksToRemove.Count > 0)
+                    {
+                        int i = r.Next(blocksToRemove.Count);
+
+                        bot.Room.setBlock(blocksToRemove[i].X, blocksToRemove[i].Y, blocksToRemove[i].Block);
+                        blocksToRemove.RemoveAt(i);
+                    }
+
+
+                    toRemove = e.Current;
+                    break;
+                }
+            }
+            if (toRemove != null)
+                dynamites.Remove(toRemove);
         }
 
         public void AddUnsavedPlayer(IPlayer player)
