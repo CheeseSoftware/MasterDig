@@ -28,7 +28,7 @@ namespace MasterDig
 
         public string Name { get { return name; } }
         public string AbilityText { get { return abilityText; } }
-        public string MinLevel { get { return minLevel; } }
+        public int MinLevel { get { return minLevel; } }
     }
 
     public class DigPlayer
@@ -110,8 +110,8 @@ namespace MasterDig
 
         public void addAbility(Ability ability)
         {
-            if (!abilities.ContainsKey(ability))
-                abilities.Add(ability.name, ability);
+            if (!abilities.ContainsKey(ability.Name))
+                abilities.Add(ability.Name, ability);
         }
 
         public bool hasAbility(string abilityName)
@@ -120,7 +120,7 @@ namespace MasterDig
             if (!abilities.ContainsKey(abilityName))
                 return false;
 
-            if (abilities[ability].MinLevel <= digLevel_)
+            if (abilities[abilityName].MinLevel <= digLevel_)
                 return true;
             else
                 return false;
@@ -167,21 +167,21 @@ namespace MasterDig
         {
             newAbilities.Clear();
 
-            foreach (Ability ability in abilities)
+            foreach (Ability ability in abilities.Values)
             {
                 if (ability.MinLevel == this.digLevel_)
-                    newAbilities.add(ability);
+                    newAbilities.Add(ability);
             }
 
             if (abilities.Count == 1)
             {
-                this.player.Reply("You can now " + abilities[0].AbilityText + "! :P");
+                this.player.Reply("You can now " + abilities.First().Value.AbilityText + "! :P");
             }
             else if (abilities.Count > 1)
             {
                 string abilityText = "";
                 string lastAbility = "";
-                foreach (Ability ability in abilities)
+                foreach (Ability ability in abilities.Values)
                 {
 
                     abilityText += lastAbility + ", ";
