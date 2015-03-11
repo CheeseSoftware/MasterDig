@@ -261,7 +261,7 @@ namespace MasterDig
                                     if (digPlayer.digMoney >= (itemPrice * amount))
                                     {
                                         digPlayer.digMoney -= itemPrice;
-                                        digPlayer.inventory.AddItem(new InventoryItem(item.GetData()), amount);
+                                        digPlayer.inventory.AddItem(new InventoryItem(item), amount);
                                         player.Reply("Item bought!");
                                     }
                                     else

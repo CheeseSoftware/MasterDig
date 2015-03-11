@@ -13,86 +13,17 @@ namespace MasterDig.Inventory
         public static Dictionary<string, InventoryItem> itemTranslator = new Dictionary<string, InventoryItem>();
         static DigBlockMap()
         {
-            blockTranslator.Add((int)Blocks.Stone, new InventoryItem(new object[]{
-                "stone",
-                1, //XPGAIN
-                10, //SHOPBUY
-                1, //SHOPSELL
-                5, //HARDNESS
-                0  //LEVELREQ
-            }));
-
-            blockTranslator.Add((int)Blocks.Copper, new InventoryItem(new object[]{
-                "copper",
-                5, //XPGAIN
-                5, //SHOPBUY
-                2, //SHOPSELL
-                10, //HARDNESS
-                2  //LEVELREQ
-            }));
-
-            blockTranslator.Add((int)Blocks.Iron, new InventoryItem(new object[]{
-                "iron",
-                6, //XPGAIN
-                8, //SHOPBUY
-                3, //SHOPSELL
-                14, //HARDNESS
-                6  //LEVELREQ
-            }));
-
-
-            blockTranslator.Add((int)Blocks.Gold, new InventoryItem(new object[]{
-                "gold",
-                15, //XPGAIN
-                15, //SHOPBUY
-                14, //SHOPSELL
-                18, //HARDNESS
-                10  //LEVELREQ
-            }));
-
-            blockTranslator.Add((int)Blocks.Emerald, new InventoryItem(new object[]{
-                "emerald",
-                5, //XPGAIN
-                5, //SHOPBUY
-                0, //SHOPSELL
-                24, //HARDNESS
-                15  //LEVELREQ
-            }));
-
-            blockTranslator.Add((int)Blocks.Ruby, new InventoryItem(new object[]{
-                "ruby",
-                5, //XPGAIN
-                5, //SHOPBUY
-                0, //SHOPSELL
-                30, //HARDNESS
-                20  //LEVELREQ
-            }));
-
-            blockTranslator.Add((int)Blocks.Sapphire, new InventoryItem(new object[]{
-                "sapphire",
-                5, //XPGAIN
-                5, //SHOPBUY
-                0, //SHOPSELL
-                36, //HARDNESS
-                25  //LEVELREQ
-            }));
-
-            blockTranslator.Add((int)Blocks.Diamond, new InventoryItem(new object[]{
-                "diamond",
-                5, //XPGAIN
-                5, //SHOPBUY
-                0, //SHOPSELL
-                56, //HARDNESS
-                30  //LEVELREQ
-            }));
-
-
-
+            blockTranslator.Add((int)Blocks.Stone, new OreStone());
+            blockTranslator.Add((int)Blocks.Copper, new OreCopper());
+            blockTranslator.Add((int)Blocks.Iron, new OreIron());
+            blockTranslator.Add((int)Blocks.Gold, new OreGold());
+            blockTranslator.Add((int)Blocks.Emerald, new OreEmerald());
+            blockTranslator.Add((int)Blocks.Ruby, new OreRuby());
+            blockTranslator.Add((int)Blocks.Sapphire, new OreSapphire());
+            blockTranslator.Add((int)Blocks.Diamond, new OreDiamond());
 
             foreach (InventoryItem i in blockTranslator.Values)
-            {
-                itemTranslator.Add(i.GetName(), i);
-            }
+                itemTranslator.Add(i.Name, i);
 
             itemTranslator.Add("dynamite", new ItemDynamite());
         }

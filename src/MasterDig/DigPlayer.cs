@@ -86,8 +86,6 @@ namespace MasterDig
             {
                 if (!Directory.Exists(@"data\)"))
                     Directory.CreateDirectory(@"data\");
-                if (!Directory.Exists(@"data\inventories\)"))
-                    Directory.CreateDirectory(@"data\inventories\");
 
                 string inventoryPath = @"data\inventories\" + player.Name;
                 if (!File.Exists(inventoryPath))
@@ -165,6 +163,7 @@ namespace MasterDig
 
         public void updateNewAbilities()
         {
+            return;
             newAbilities.Clear();
 
             foreach (Ability ability in abilities.Values)

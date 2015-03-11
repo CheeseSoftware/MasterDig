@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MasterBot.IO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -81,7 +82,7 @@ namespace MasterDig.Inventory
             {
                 foreach (Pair<InventoryItem, int> i in storedItems.Values)
                 {
-                    if (i.first.GetName() == name)
+                    if (i.first.Name == name)
                         return (i.first);
                 }
                 return null;
@@ -157,8 +158,9 @@ namespace MasterDig.Inventory
                 string contents = "Inventory: ";
                 foreach (Pair<InventoryItem, int> i in storedItems.Values)
                 {
-                    contents += i.second + " " + i.first.GetName() + ", ";
+                    contents += i.second + " " + i.first.Name + ", ";
                 }
+                contents = contents.Remove(contents.Length - 3);
                 return contents;
             }
         }
@@ -180,14 +182,21 @@ namespace MasterDig.Inventory
 
         public void Save(string path)
         {
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            formatter.Serialize(stream, storedItems);
-            stream.Close();
+            SaveFile saveFile = new SaveFile(path);
+            foreach(KeyValuePair<int, Pair<InventoryItem, int>> data in storedItems)
+            {
+                foreach(KeyValuePair<string, object> entry in data.Value.first.GetData())
+                {
+                    saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + "." + entry.Key), new Node(entry.Value.ToString()));
+                }
+            }
+            saveFile.AddNode(new NodePath("data.xp"), new Node("353"));
+            saveFile.Save();
         }
 
         public void Load(string path)
         {
+            return;
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             storedItems = (Dictionary<int, Pair<InventoryItem, int>>)formatter.Deserialize(stream);
