@@ -180,9 +180,8 @@ namespace MasterDig.Inventory
             }
         }
 
-        public void Save(string path)
+        public SaveFile Save(SaveFile saveFile)
         {
-            SaveFile saveFile = new SaveFile(path);
             //For each item in inventory
             foreach(KeyValuePair<int, Pair<InventoryItem, int>> data in storedItems)
             {
@@ -193,16 +192,30 @@ namespace MasterDig.Inventory
                     saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".data." + entry.Key), new Node(entry.Value.ToString()));
                 }
             }
-            saveFile.Save();
+            return saveFile;
         }
 
-        public void Load(string path)
+        public void Load(SaveFile file)
         {
-            return;
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            storedItems = (Dictionary<int, Pair<InventoryItem, int>>)formatter.Deserialize(stream);
-            stream.Close();
+            Dictionary<string, Node> nodes = file.Nodes;
+            if(nodes.ContainsKey("inventory"))
+            {
+                Node inventory = nodes["inventory"];
+                //For each item in inventory
+                foreach(KeyValuePair<string, Node> item in inventory.Nodes)
+                {
+                    InventoryItem inventoryItem = new InventoryItem(item.Key);
+                    int amount = int.Parse(item.Value.Nodes["amount"].Value);
+                    //For each data entry in item
+                    foreach(KeyValuePair<string, Node> data in item.Value.Nodes)
+                    {
+                        if (data.Key.Equals("amount"))
+                            continue;
+                        inventoryItem.SetData(data.Key, data.Value.Value);
+                    }
+                    AddItem(inventoryItem, amount);
+                }
+            }
         }
     }
 

@@ -3,6 +3,7 @@ using MasterBot.Room;
 using MasterBot.Room.Block;
 using MasterBot.SubBot;
 using MasterDig.Inventory;
+using MasterDig.Inventory.InventoryItems;
 using Skylight;
 using System;
 using System.Collections.Generic;
@@ -62,13 +63,14 @@ namespace MasterDig
                 InventoryItem temp = ItemManager.GetItemFromOreId(block.Id);
                 if (temp != null)
                 {
+                    Ore ore = ItemManager.GetOreByName(temp.Name);
                     blockId = 414;
 
                     if (!player.HasMetadata("digplayer"))
                         player.SetMetadata("digplayer", new DigPlayer(player));
                     DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
 
-                    if (digPlayer.digLevel >= Convert.ToInt32(temp.GetData("diglevel")))
+                    if (digPlayer.digLevel >= Convert.ToInt32(ore.LevelRequired))
                     {
                         if (digHardness[x, y] <= digStrength)
                         {
@@ -78,7 +80,7 @@ namespace MasterDig
 
                             digPlayer.inventory.AddItem(newsak, 1);
                             int oldLevel = digPlayer.digLevel;
-                            digPlayer.digXp += Convert.ToInt32(temp.GetData("xpgain"));
+                            digPlayer.digXp += Convert.ToInt32(ore.XPGain);
                             int newLevel = digPlayer.digLevel;
                             if (newLevel > oldLevel)
                                 player.Reply("You have leveled up to level " + newLevel + "!");

@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using MasterBot;
 using MasterDig.Inventory;
 using System.Runtime.Serialization.Formatters.Binary;
+using MasterBot.IO;
 
 namespace MasterDig
 {
@@ -63,20 +64,23 @@ namespace MasterDig
             {
                 if (!Directory.Exists(@"data\)"))
                     Directory.CreateDirectory(@"data\");
-                if (!Directory.Exists(@"data\inventories\)"))
-                    Directory.CreateDirectory(@"data\inventories\");
-
-                string inventoryPath = @"data\inventories\" + player.Name;
-                if (!File.Exists(inventoryPath))
-                    File.Create(inventoryPath).Close();
-                inventory.Save(inventoryPath);
 
                 string dataPath = @"data\" + player.Name;
-                IFormatter formatter = new BinaryFormatter();
+                SaveFile saveFile = new SaveFile(dataPath);
+                inventory.Save(saveFile);
+
+                Node playerData = new Node("playerdata");
+                playerData.AddNode("digxp", new Node(xp.ToString()));
+                playerData.AddNode("digmoney", new Node(digMoney_.ToString()));
+                saveFile.AddNode("playerdata", playerData);
+
+                saveFile.Save();
+
+                /*IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(dataPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
                 formatter.Serialize(stream, digXp);
                 formatter.Serialize(stream, digMoney);
-                stream.Close();
+                stream.Close();*/
             }
         }
 
@@ -87,22 +91,31 @@ namespace MasterDig
                 if (!Directory.Exists(@"data\)"))
                     Directory.CreateDirectory(@"data\");
 
-                string inventoryPath = @"data\inventories\" + player.Name;
-                if (!File.Exists(inventoryPath))
-                    return;
-                inventory.Load(inventoryPath);
-
                 string dataPath = @"data\" + player.Name;
                 if (!File.Exists(dataPath))
                     return;
 
-                digLevel_ = 0;
+                SaveFile saveFile = new SaveFile(dataPath);
+                saveFile.Load();
+
+                if (saveFile.Nodes.ContainsKey("playerdata"))
+                {
+                    Node playerData = saveFile.Nodes["playerdata"];
+                    if (playerData.Nodes.ContainsKey("digxp"))
+                        xp = int.Parse(playerData.GetNode("digxp").Value);
+                    if (playerData.Nodes.ContainsKey("digmoney"))
+                        digMoney_ = int.Parse(playerData.GetNode("digmoney").Value);
+                }
+
+                inventory.Load(saveFile);
+
+                /*digLevel_ = 0;
                 IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(dataPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 digXp = (int)formatter.Deserialize(stream);
                 digMoney_ = (int)formatter.Deserialize(stream);
                 stream.Close();
-                xpRequired = getXpRequired(digLevel);
+                xpRequired = getXpRequired(digLevel);*/
             }
         }
 
