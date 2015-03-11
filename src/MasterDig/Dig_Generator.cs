@@ -16,13 +16,13 @@ namespace MasterDig
     {
         IBlockDrawer generatorDrawer;
 
-        private void Generate(int width, int height)
+        private void Generate(int width, int height, int seed)
         {
             int centerHoleDiameter = 10;
 
             generatorDrawer = bot.Room.BlockDrawerPool.CreateBlockDrawer(1);
             Random random = new Random();
-            Graphics.Tools.Noise.Primitive.SimplexPerlin noise = new Graphics.Tools.Noise.Primitive.SimplexPerlin(random.Next(), NoiseQuality.Best);
+            Graphics.Tools.Noise.Primitive.SimplexPerlin noise = new Graphics.Tools.Noise.Primitive.SimplexPerlin(seed, NoiseQuality.Best);
             BlockMap blockMap = new BlockMap(bot, width, height);
 
             for (int x = 1; x < width - 1; x++)

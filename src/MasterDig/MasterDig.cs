@@ -21,6 +21,7 @@ namespace MasterDig
         protected object dugBlocksToPlaceQueueLock = 0;
         protected float[,] digHardness;
         private IBlockDrawer blockDrawer;
+        Random random = new Random();
 
         private bool isDigable(int blockId)
         {

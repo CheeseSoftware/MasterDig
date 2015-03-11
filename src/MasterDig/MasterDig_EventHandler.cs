@@ -197,9 +197,18 @@ namespace MasterDig
                     case "generate":
                         if (player.IsOp)
                         {
-                            bot.Say("Generating new map..");
+                            int seed = -1;
+
+                            if (args.Length == 1)
+                            {
+                                Int32.TryParse(args[0], out seed);
+                            }
+                            if (seed == -1)
+                                seed = random.Next();
+
+                            bot.Say("Generating new map with seed " + seed + ".");
                             digHardness = new float[bot.Room.Width, bot.Room.Height];
-                            Generate(bot.Room.Width, bot.Room.Height);
+                            Generate(bot.Room.Width, bot.Room.Height, seed);
                         }
                         break;
                     case "givexp":
