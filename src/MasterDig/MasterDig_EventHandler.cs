@@ -199,7 +199,7 @@ namespace MasterDig
                         {
                             int seed = -1;
 
-                            if (args.Length == 1)
+                            if (args.Length >= 1)
                             {
                                 Int32.TryParse(args[0], out seed);
                             }
