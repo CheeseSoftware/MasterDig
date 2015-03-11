@@ -51,18 +51,18 @@ namespace MasterDig
             if (!(x > 0 && y > 0 && x < bot.Room.Width && y < bot.Room.Height))
                 return;
 
-            //if (digHardness[x, y] <= 0)
-              //  return;
+            if (digHardness[x, y] <= 0)
+                return;
 
             IBlock block = bot.Room.getBlock(0, x, y);
             int blockId = -1;
 
             if (mining)
             {
-                if (DigBlockMap.blockTranslator.ContainsKey(block.Id))
+                InventoryItem temp = ItemManager.GetItemFromOreId(block.Id);
+                if (temp != null)
                 {
                     blockId = 414;
-                    InventoryItem temp = DigBlockMap.blockTranslator[block.Id];
 
                     if (!player.HasMetadata("digplayer"))
                         player.SetMetadata("digplayer", new DigPlayer(player));
@@ -70,7 +70,6 @@ namespace MasterDig
 
                     if (digPlayer.digLevel >= Convert.ToInt32(temp.GetData("diglevel")))
                     {
-                        //Shop.shopInventory[DigBlockMap.blockTranslator[block.blockId]].GetDataAt(3)//för hårdhet
                         if (digHardness[x, y] <= digStrength)
                         {
                             digHardness[x, y] = 0F;
@@ -164,10 +163,9 @@ namespace MasterDig
                     else
                         digHardness[x, y] = 15F;
                 }
-                else if (DigBlockMap.blockTranslator.ContainsKey(blockId))
+                else if (ItemManager.GetItemFromOreId(blockId) != null)
                 {
-                    if (Shop.shopInventory.ContainsKey(DigBlockMap.blockTranslator[blockId].Name))
-                        digHardness[x, y] = Convert.ToInt32(Shop.shopInventory[DigBlockMap.blockTranslator[blockId].Name].GetData("dighardness"));
+                    digHardness[x, y] = ItemManager.GetOreByName(ItemManager.GetItemFromOreId(blockId).Name).Hardness;
                 }
                 else if (!isDug(blockId))
                     digHardness[x, y] = -1f;

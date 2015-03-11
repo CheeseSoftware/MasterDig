@@ -9,18 +9,20 @@ namespace MasterDig.Inventory
     public class InventoryItem
     {
         protected Dictionary<string, object> data = new Dictionary<string,object>();
+        protected string _name;
 
         public InventoryItem(string name)
         {
-            data.Add("name", name);
+            _name = name;
         }
 
         public InventoryItem(InventoryItem item)
         {
             this.data = item.data;
+            _name = item.Name;
         }
 
-        public string Name { get { return (string)data["name"]; } }
+        public string Name { get { return _name; } }
 
         public Dictionary<string, object> GetData()
         {
@@ -76,6 +78,10 @@ namespace MasterDig.Inventory
 
         public static bool operator !=(InventoryItem a, InventoryItem b)
         {
+            if ((object)a == null && (object)b == null)
+                return false;
+            else if ((object)a == null || (object)b == null)
+                return true;
             return a.Name != b.Name;
         }
 

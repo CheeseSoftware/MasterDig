@@ -6,22 +6,40 @@ using System.Threading.Tasks;
 
 namespace MasterDig.Inventory.InventoryItems
 {
-    class Ore : InventoryItem
+    public class Ore : IShopItem
     {
-        public Ore(string name)
-            : base(name)
-        {
+        private string _name;
+        private int _XPGain;
+        private int _buyPrice;
+        private int _sellPrice;
+        private int _hardness;
+        private int _levelRequired;
 
+        public Ore(string name, int XPGain, int buyPrice, int sellPrice, int hardness, int levelRequired)
+        {
+            _name = name;
+            _XPGain = XPGain;
+            _buyPrice = buyPrice;
+            _sellPrice = sellPrice;
+            _hardness = hardness;
+            _levelRequired = levelRequired;
         }
 
-        public int XPGain { get { return (int)GetData("xpgain"); } }
+        public InventoryItem GetItem()
+        {
+            return new InventoryItem(_name);
+        }
 
-        public int BuyPrice { get { return (int)GetData("buyprice"); } }
+        public String Name { get { return _name; } }
 
-        public int SellPrice { get { return (int)GetData("sellprice"); } }
+        public int XPGain { get { return _XPGain; } }
 
-        public int Hardness { get { return (int)GetData("dighardness"); } }
+        public int BuyPrice { get { return _buyPrice; } }
 
-        public int LevelRequired { get { return (int)GetData("levelrequired"); } }
+        public int SellPrice { get { return _sellPrice; } }
+
+        public int Hardness { get { return _hardness; } }
+
+        public int LevelRequired { get { return _levelRequired; } }
     }
 }

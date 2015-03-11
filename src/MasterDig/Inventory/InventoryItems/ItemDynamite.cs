@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace MasterDig.Inventory.InventoryItems
 {
-    class ItemDynamite : InventoryItem
+    class ItemDynamite : InventoryItem, IShopItem
     {
         public ItemDynamite()
             : base("dynamite")
         {
-            data.Add("buyprice", 60);
-            data.Add("sellprice", 30);
             data.Add("explosionstrength", 15);
             data.Add("dateplaced", DateTime.Now);
         }
@@ -20,5 +18,9 @@ namespace MasterDig.Inventory.InventoryItems
         public float Strength { get { return (int)GetData("explosionstrength"); } }
 
         public DateTime DatePlaced { get { return (DateTime)GetData("dateplaced"); } }
+
+        public int BuyPrice { get { return 60; } }
+
+        public int SellPrice { get { return 30; } }
     }
 }

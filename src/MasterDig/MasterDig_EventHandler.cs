@@ -252,10 +252,12 @@ namespace MasterDig
                         {
                             if (args.Length > 1)
                             {
-                                if (DigBlockMap.itemTranslator.ContainsKey(args[0].ToLower()))
+                                string itemName = args[0].ToLower();
+                                InventoryItem item = ItemManager.GetItemFromName(itemName);
+                                if (item != null)
                                 {
-                                    InventoryItem item = DigBlockMap.itemTranslator[args[0].ToLower()];
-                                    int itemPrice = Shop.GetBuyPrice(item);
+                                    IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
+                                    int itemPrice = shopItem.BuyPrice;
 
                                     int amount = 1;
                                     if (args.Length >= 2)
@@ -284,10 +286,12 @@ namespace MasterDig
                             if (args.Length > 1)
                             {
                                 string itemName = args[0].ToLower();
-                                if (DigBlockMap.itemTranslator.ContainsKey(itemName))
+                                InventoryItem item = ItemManager.GetItemFromName(itemName);
+                                if (item != null)
                                 {
-                                    InventoryItem item = DigBlockMap.itemTranslator[itemName];
-                                    int itemSellPrice = Shop.GetSellPrice(item);
+                                    IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
+                                    int itemSellPrice = shopItem.SellPrice;
+
                                     int amount = 1;
                                     if (args.Length >= 2)
                                         int.TryParse(args[1], out amount);
@@ -382,7 +386,7 @@ namespace MasterDig
                     blocksToRemove.Sort((s1, s2) => s1.second.CompareTo(s2.second));
 
                     foreach (var block in blocksToRemove)
-                        DigBlock(block.first.X, block.first.Y, null, (int)Math.Floor(1/block.second*50)*((float)r.Next(100)/100+1), false, true);
+                        DigBlock(block.first.X, block.first.Y, null, (int)Math.Floor(1 / block.second * 50) * ((float)r.Next(100) / 100 + 1), false, true);
                     blocksToRemove.Clear();
 
 

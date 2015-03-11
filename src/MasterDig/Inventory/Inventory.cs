@@ -160,7 +160,7 @@ namespace MasterDig.Inventory
                 {
                     contents += i.second + " " + i.first.Name + ", ";
                 }
-                contents = contents.Remove(contents.Length - 3);
+                contents = contents.Remove(contents.Length - 2);
                 return contents;
             }
         }
@@ -183,15 +183,16 @@ namespace MasterDig.Inventory
         public void Save(string path)
         {
             SaveFile saveFile = new SaveFile(path);
+            //For each item in inventory
             foreach(KeyValuePair<int, Pair<InventoryItem, int>> data in storedItems)
             {
                 saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".amount"), new Node(data.Value.second.ToString()));
+                //For each data entry in item
                 foreach(KeyValuePair<string, object> entry in data.Value.first.GetData())
                 {
-                    saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + "." + entry.Key), new Node(entry.Value.ToString()));
+                    saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".data." + entry.Key), new Node(entry.Value.ToString()));
                 }
             }
-            saveFile.AddNode(new NodePath("data.xp"), new Node("353"));
             saveFile.Save();
         }
 
