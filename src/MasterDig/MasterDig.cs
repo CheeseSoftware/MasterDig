@@ -33,6 +33,16 @@ namespace MasterDig
                 return false;
         }
 
+        private bool isDug(int blockId)
+        {
+            if (blockId == 4 || blockId == 414)
+                return true;
+            else if (blockId == 119 || blockId == 369) // water and mud
+                return true;
+            else
+                return false;
+        }
+
         private void DigBlock(int x, int y, IPlayer player, float digStrength, bool mining, bool explosion = false)
         {
             if (digHardness == null)
@@ -63,13 +73,15 @@ namespace MasterDig
                         //Shop.shopInventory[DigBlockMap.blockTranslator[block.blockId]].GetDataAt(3)//för hårdhet
                         if (digHardness[x, y] <= digStrength)
                         {
+                            digHardness[x, y] = 0F;
+
                             InventoryItem newsak = new InventoryItem(temp.GetData());
                             digPlayer.inventory.AddItem(newsak, 1);
                             int oldLevel = digPlayer.digLevel;
                             digPlayer.digXp += Convert.ToInt32(temp.GetDataAt(1));
                             int newLevel = digPlayer.digLevel;
                             if (newLevel > oldLevel)
-                                bot.Say(player.Name + " has leveled up to level " + newLevel + "!");
+                                player.Reply("You have leveled up to level " + newLevel + "!");
                         }
                     }
                     else
@@ -109,6 +121,8 @@ namespace MasterDig
 
             if (digHardness[x, y] <= 0)
             {
+                digHardness[x, y] = 0f;
+
                 bot.Room.setBlock(x, y, new NormalBlock(blockId));
                 lock (dugBlocksToPlaceQueueLock)
                     dugBlocksToPlaceQueue.Enqueue(new BlockWithPos(x, y, block));
@@ -147,13 +161,15 @@ namespace MasterDig
                     if (blockId == Skylight.BlockIds.Blocks.Sand.BROWN)
                         digHardness[x, y] = 1F;
                     else
-                        digHardness[x, y] = 5F;
+                        digHardness[x, y] = 15F;
                 }
                 else if (DigBlockMap.blockTranslator.ContainsKey(blockId))
                 {
                     if (Shop.shopInventory.ContainsKey(DigBlockMap.blockTranslator[blockId].GetName()))
                         digHardness[x, y] = Convert.ToInt32(Shop.shopInventory[DigBlockMap.blockTranslator[blockId].GetName()].GetDataAt(4));
                 }
+                else if (!isDug(blockId))
+                    digHardness[x, y] = -1f;
             }
         }
 

@@ -142,11 +142,13 @@ namespace MasterDig
 
                 case "b":
                     {
+                        int layer = m.GetInt(0);
                         int blockId = m.GetInt(3);
                         int x = m.GetInt(1);
                         int y = m.GetInt(2);
 
-                        resetBlockHardness(x, y, blockId);
+                        if (layer == 0)
+                            resetBlockHardness(x, y, blockId);
                     }
                     break;
 
@@ -345,7 +347,8 @@ namespace MasterDig
                 while (dugBlocksToPlaceQueue.Count > bot.Room.Width * bot.Room.Height / 20)
                 {
                     BlockWithPos block = dugBlocksToPlaceQueue.Dequeue();
-                    bot.Room.setBlock(block.X, block.Y, block.Block);
+                    if (digHardness[block.X, block.Y] == 0f)
+                        bot.Room.setBlock(block.X, block.Y, block.Block);
                 }
             }
 

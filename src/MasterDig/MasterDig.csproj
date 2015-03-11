@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\plugins\</OutputPath>
+    <OutputPath>..\..\..\MasterBot\src\MasterBot\bin\Release\plugins\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,7 +34,7 @@
   <ItemGroup>
     <Reference Include="libnoise, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\MasterBot\src\MasterBot\bin\Debug\plugins\libnoise.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Skype\My Skype Received Files\libnoise.dll</HintPath>
     </Reference>
     <Reference Include="MasterBotLib">
       <HintPath>..\..\..\MasterBot\src\MasterBotLib\bin\Debug\MasterBotLib.dll</HintPath>
@@ -46,7 +46,7 @@
     </Reference>
     <Reference Include="Skylight, Version=1.0.4952.20892, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\MasterBot\src\MasterBot\bin\Debug\plugins\Skylight.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Skype\My Skype Received Files\Skylight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
