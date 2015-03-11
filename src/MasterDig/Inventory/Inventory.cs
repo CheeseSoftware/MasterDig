@@ -185,6 +185,7 @@ namespace MasterDig.Inventory
             SaveFile saveFile = new SaveFile(path);
             foreach(KeyValuePair<int, Pair<InventoryItem, int>> data in storedItems)
             {
+                saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".amount"), new Node(data.Value.second.ToString()));
                 foreach(KeyValuePair<string, object> entry in data.Value.first.GetData())
                 {
                     saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + "." + entry.Key), new Node(entry.Value.ToString()));

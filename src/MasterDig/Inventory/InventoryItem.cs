@@ -54,6 +54,7 @@ namespace MasterDig.Inventory
 
         public override bool Equals(object obj)
         {
+            //TODO: FIX EQUALS
             InventoryItem item = obj as InventoryItem;
             return item.Name == Name;
         }
