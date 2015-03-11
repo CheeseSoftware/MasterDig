@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace MasterDig.Inventory
 {
-    [Serializable]
     public class InventoryItem
     {
-        private object[] data;
+        protected Dictionary<string, object> data = new Dictionary<string,object>();
 
-        public InventoryItem(object[] data)
+        public InventoryItem(string name)
         {
-            this.data = data;
+            data.Add("name", name);
         }
 
         public InventoryItem(InventoryItem item)
@@ -21,40 +20,48 @@ namespace MasterDig.Inventory
             this.data = item.data;
         }
 
-        public string GetName()
-        {
-            return (string)this.data[0];
-        }
+        public string Name { get { return (string)data["name"]; } }
 
-        public object[] GetData()
+        public Dictionary<string, object> GetData()
         {
             return data;
         }
 
-        public object GetDataAt(int index)
+        public object GetData(string key)
         {
-            return (data[index]);
+            if (data.ContainsKey(key))
+                return data[key];
+            return null;
         }
 
-        public void SetData(object[] data)
+        public Boolean HasData(string key)
+        {
+            return data.ContainsKey(key);
+        }
+
+        public void SetData(Dictionary<string, object> data)
         {
             this.data = data;
         }
 
-        public void SetDataAt(object data, int index)
+        public void SetData(string key, object value)
         {
-            this.data[index] = data;
+            if (data.ContainsKey(key))
+                this.data[key] = value;
+            else
+                data.Add(key, value);
         }
 
         public override bool Equals(object obj)
         {
+            //TODO: FIX EQUALS
             InventoryItem item = obj as InventoryItem;
-            return /*item.GetData() == GetData() && */item.GetName() == GetName();
+            return item.Name == Name;
         }
 
         public bool Equals(InventoryItem item)
         {
-            return /*item.GetData() == GetData() && */item.GetName() == GetName();
+            return item.Name == Name;
         }
 
         public override int GetHashCode()
@@ -69,12 +76,12 @@ namespace MasterDig.Inventory
 
         public static bool operator !=(InventoryItem a, InventoryItem b)
         {
-            return /*a.GetData() != b.GetData() || */a.GetName() != b.GetName();
+            return a.Name != b.Name;
         }
 
         public static bool operator ==(InventoryItem a, InventoryItem b)
         {
-            return /*a.GetData() == b.GetData() && */a.GetName() == b.GetName();
+            return a.Name == b.Name;
         }
 
     }

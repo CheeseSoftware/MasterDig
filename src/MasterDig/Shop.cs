@@ -21,12 +21,12 @@ namespace MasterDig
 
         static public int GetBuyPrice(InventoryItem item)
         {
-            return (int)item.GetDataAt(2);
+            return (int)item.GetData("buyprice");
         }
 
         static public int GetSellPrice(InventoryItem item)
         {
-            return (int)item.GetDataAt(3);
+            return (int)item.GetData("sellprice");
         }
 
         /*static public InventoryItem Buy(string itemName, int amount)

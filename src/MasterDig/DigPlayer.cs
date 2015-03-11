@@ -13,10 +13,30 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MasterDig
 {
+    public class Ability
+    {
+        string name;
+        string abilityText = "do some stuff";
+        int minLevel;
+
+        public Ability(string name, string abilityText, int minLevel)
+        {
+            this.name = name;
+            this.abilityText = abilityText;
+            this.minLevel = minLevel;
+        }
+
+        public string Name { get { return name; } }
+        public string AbilityText { get { return abilityText; } }
+        public int MinLevel { get { return minLevel; } }
+    }
+
     public class DigPlayer
     {
         Stopwatch betaDigTimer = new Stopwatch();
         public Inventory.Inventory inventory = new Inventory.Inventory(100);
+        Dictionary<string, Ability> abilities;
+        SafeList<Ability> newAbilities;
         protected int xp = 0;
         protected int xpRequired;
         protected int digLevel_ = 0;
@@ -66,8 +86,6 @@ namespace MasterDig
             {
                 if (!Directory.Exists(@"data\)"))
                     Directory.CreateDirectory(@"data\");
-                if (!Directory.Exists(@"data\inventories\)"))
-                    Directory.CreateDirectory(@"data\inventories\");
 
                 string inventoryPath = @"data\inventories\" + player.Name;
                 if (!File.Exists(inventoryPath))
@@ -87,6 +105,28 @@ namespace MasterDig
                 xpRequired = getXpRequired(digLevel);
             }
         }
+
+        public void addAbility(Ability ability)
+        {
+            if (!abilities.ContainsKey(ability.Name))
+                abilities.Add(ability.Name, ability);
+        }
+
+        public bool hasAbility(string abilityName)
+        {
+
+            if (!abilities.ContainsKey(abilityName))
+                return false;
+
+            if (abilities[abilityName].MinLevel <= digLevel_)
+                return true;
+            else
+                return false;
+
+
+        }
+
+        public SafeList<Ability> NewAbilities { get { return newAbilities; } }
 
         public int digRange { get { return ((digLevel_ > 0 && fastDig) ? 2 : 1) + ((betaDig) ? 1 : 0); } }
 
@@ -110,10 +150,46 @@ namespace MasterDig
                     xp = value;
                     if (xp >= xpRequired)
                         while (xp >= xpRequired)
+                        {
                             xpRequired = getXpRequired(++digLevel_);
+                            if (xp < xpRequired)
+                                updateNewAbilities();
+                        }
                     else
                         xpRequired = getXpRequired((digLevel_ = getLevel(xp)));
                 }
+            }
+        }
+
+        public void updateNewAbilities()
+        {
+            return;
+            newAbilities.Clear();
+
+            foreach (Ability ability in abilities.Values)
+            {
+                if (ability.MinLevel == this.digLevel_)
+                    newAbilities.Add(ability);
+            }
+
+            if (abilities.Count == 1)
+            {
+                this.player.Reply("You can now " + abilities.First().Value.AbilityText + "! :P");
+            }
+            else if (abilities.Count > 1)
+            {
+                string abilityText = "";
+                string lastAbility = "";
+                foreach (Ability ability in abilities.Values)
+                {
+
+                    abilityText += lastAbility + ", ";
+                    lastAbility = ability.AbilityText;
+                }
+                abilityText = abilityText.Substring(abilityText.Length - 2);
+
+                // TODO: Split long texts!...
+                this.player.Reply("You can now " + abilityText + " and " + lastAbility + "! :O");
             }
         }
 
@@ -126,5 +202,6 @@ namespace MasterDig
 
             return level;
         }
+
     }
 }

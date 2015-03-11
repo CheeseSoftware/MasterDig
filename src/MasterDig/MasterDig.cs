@@ -51,8 +51,8 @@ namespace MasterDig
             if (!(x > 0 && y > 0 && x < bot.Room.Width && y < bot.Room.Height))
                 return;
 
-            if (digHardness[x, y] <= 0)
-                return;
+            //if (digHardness[x, y] <= 0)
+              //  return;
 
             IBlock block = bot.Room.getBlock(0, x, y);
             int blockId = -1;
@@ -68,17 +68,18 @@ namespace MasterDig
                         player.SetMetadata("digplayer", new DigPlayer(player));
                     DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
 
-                    if (digPlayer.digLevel >= Convert.ToInt32(temp.GetDataAt(5)))
+                    if (digPlayer.digLevel >= Convert.ToInt32(temp.GetData("diglevel")))
                     {
                         //Shop.shopInventory[DigBlockMap.blockTranslator[block.blockId]].GetDataAt(3)//för hårdhet
                         if (digHardness[x, y] <= digStrength)
                         {
                             digHardness[x, y] = 0F;
 
-                            InventoryItem newsak = new InventoryItem(temp.GetData());
+                            InventoryItem newsak = new InventoryItem(temp);
+
                             digPlayer.inventory.AddItem(newsak, 1);
                             int oldLevel = digPlayer.digLevel;
-                            digPlayer.digXp += Convert.ToInt32(temp.GetDataAt(1));
+                            digPlayer.digXp += Convert.ToInt32(temp.GetData("xpgain"));
                             int newLevel = digPlayer.digLevel;
                             if (newLevel > oldLevel)
                                 player.Reply("You have leveled up to level " + newLevel + "!");
@@ -165,8 +166,8 @@ namespace MasterDig
                 }
                 else if (DigBlockMap.blockTranslator.ContainsKey(blockId))
                 {
-                    if (Shop.shopInventory.ContainsKey(DigBlockMap.blockTranslator[blockId].GetName()))
-                        digHardness[x, y] = Convert.ToInt32(Shop.shopInventory[DigBlockMap.blockTranslator[blockId].GetName()].GetDataAt(4));
+                    if (Shop.shopInventory.ContainsKey(DigBlockMap.blockTranslator[blockId].Name))
+                        digHardness[x, y] = Convert.ToInt32(Shop.shopInventory[DigBlockMap.blockTranslator[blockId].Name].GetData("dighardness"));
                 }
                 else if (!isDug(blockId))
                     digHardness[x, y] = -1f;
