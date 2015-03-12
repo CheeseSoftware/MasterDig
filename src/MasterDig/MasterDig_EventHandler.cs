@@ -304,7 +304,7 @@ namespace MasterDig
                                     int amount = 1;
                                     if (args.Length >= 2)
                                         int.TryParse(args[1], out amount);
-                                    if (digPlayer.inventory.Contains(item) != -1 && digPlayer.inventory.GetItemCount(item) >= amount)
+                                    if (digPlayer.inventory.Contains(item) && digPlayer.inventory.GetItemCount(item) >= amount)
                                     {
                                         digPlayer.digMoney += itemSellPrice * amount;
                                         if (!digPlayer.inventory.RemoveItem(item, amount))

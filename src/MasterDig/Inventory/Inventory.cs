@@ -13,51 +13,32 @@ namespace MasterDig.Inventory
 {
     public class Inventory
     {
-        private Dictionary<int, Pair<InventoryItem, int>> storedItems;
+        private Dictionary<string, Pair<InventoryItem, int>> storedItems;
         public int capacity { get; set; }
 
         public Inventory(int size)
         {
-            storedItems = new Dictionary<int, Pair<InventoryItem, int>>(size);
+            storedItems = new Dictionary<string, Pair<InventoryItem, int>>(size);
             capacity = size;
         }
 
-        public int GetFreeSlot()
-        {
-            for (int i = 0; i < capacity; i++)
-            {
-                if (!storedItems.ContainsKey(i))
-                    return i;
-            }
-            return -1;
-        }
-
-        public int GetSlot(InventoryItem item)
+        public InventoryItem GetItem(string name)
         {
             lock (storedItems)
             {
-                foreach (KeyValuePair<int, Pair<InventoryItem, int>> i in storedItems)
-                {
-                    if (i.Value.first == item)
-                        return i.Key;
-                }
-                return -1;
+                if (storedItems.ContainsKey(name))
+                    return storedItems[name].first;
+                return null;
             }
         }
 
-        public InventoryItem GetItem(int slot)
+        public int GetItemCount(string name)
         {
             lock (storedItems)
             {
-                return storedItems[slot].first;
-            }
-        }
-
-        public int GetItemCount(int slot)
-        {
-            lock (storedItems)
-            {
-                return storedItems[slot].second;
+                if (storedItems.ContainsKey(name))
+                    return storedItems[name].second;
+                return 0;
             }
         }
 
@@ -65,27 +46,9 @@ namespace MasterDig.Inventory
         {
             lock (storedItems)
             {
-                foreach (Pair<InventoryItem, int> i in storedItems.Values)
-                {
-                    if (i.first == item)
-                    {
-                        return i.second;
-                    }
-                }
+                if (storedItems.ContainsKey(item.Name))
+                    return storedItems[item.Name].second;
                 return 0;
-            }
-        }
-
-        public InventoryItem GetItemByName(string name)
-        {
-            lock (storedItems)
-            {
-                foreach (Pair<InventoryItem, int> i in storedItems.Values)
-                {
-                    if (i.first.Name == name)
-                        return (i.first);
-                }
-                return null;
             }
         }
 
@@ -99,30 +62,26 @@ namespace MasterDig.Inventory
 
         public bool RemoveItem(InventoryItem item, int amount)
         {
-            InventoryItem itemToRemove = null;
-            bool removeAll = false;
+            return RemoveItem(item.Name, amount);
+        }
+
+        public bool RemoveItem(string item, int amount)
+        {
             lock (storedItems)
             {
-                foreach (Pair<InventoryItem, int> i in storedItems.Values)
+                if (storedItems.ContainsKey(item))
                 {
-                    if (i.first == item)
+                    var i = storedItems[item];
+                    if (i.second > amount)
                     {
-                        if (i.second > amount)
-                        {
-                            i.second -= amount;
-                            return true;
-                        }
-                        else
-                        {
-                            itemToRemove = i.first;
-                            removeAll = true;
-                        }
+                        i.second -= amount;
+                        return true;
                     }
-                }
-                if (removeAll)
-                {
-                    storedItems.Remove(GetSlot(item));
-                    return true;
+                    else
+                    {
+                        storedItems.Remove(i.first.Name);
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -132,20 +91,15 @@ namespace MasterDig.Inventory
         {
             lock (storedItems)
             {
-                int slot = Contains(item);
-                if (slot != -1)
+                if (storedItems.ContainsKey(item.Name))
                 {
-                    storedItems[slot].second += amount;
+                    storedItems[item.Name].second += amount;
                     return true;
                 }
-                else if (storedItems.Count != capacity)
+                else if (storedItems.Count < capacity)
                 {
-                    int freeSlot = GetFreeSlot();
-                    if (freeSlot != -1)
-                    {
-                        storedItems.Add(freeSlot, new Pair<InventoryItem, int>(item, amount));
-                        return true;
-                    }
+                    storedItems.Add(item.Name, new Pair<InventoryItem, int>(item, amount));
+                    return true;
                 }
                 return false;
             }
@@ -165,29 +119,29 @@ namespace MasterDig.Inventory
             }
         }
 
-        public int Contains(InventoryItem item)
+        public bool Contains(string item)
         {
             lock (storedItems)
             {
-                foreach (KeyValuePair<int, Pair<InventoryItem, int>> i in storedItems)
-                {
-                    if (i.Value.first == item)
-                    {
-                        return i.Key;
-                    }
-                }
-                return -1;
+                if (storedItems.ContainsKey(item))
+                    return true;
+                return false;
             }
+        }
+
+        public bool Contains(InventoryItem item)
+        {
+            return (Contains(item.Name));
         }
 
         public SaveFile Save(SaveFile saveFile)
         {
             //For each item in inventory
-            foreach(KeyValuePair<int, Pair<InventoryItem, int>> data in storedItems)
+            foreach (KeyValuePair<string, Pair<InventoryItem, int>> data in storedItems)
             {
                 saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".amount"), new Node(data.Value.second.ToString()));
                 //For each data entry in item
-                foreach(KeyValuePair<string, object> entry in data.Value.first.GetData())
+                foreach (KeyValuePair<string, object> entry in data.Value.first.GetData())
                 {
                     saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".data." + entry.Key), new Node(entry.Value.ToString()));
                 }
@@ -198,16 +152,16 @@ namespace MasterDig.Inventory
         public void Load(SaveFile file)
         {
             Dictionary<string, Node> nodes = file.Nodes;
-            if(nodes.ContainsKey("inventory"))
+            if (nodes.ContainsKey("inventory"))
             {
                 Node inventory = nodes["inventory"];
                 //For each item in inventory
-                foreach(KeyValuePair<string, Node> item in inventory.Nodes)
+                foreach (KeyValuePair<string, Node> item in inventory.Nodes)
                 {
                     InventoryItem inventoryItem = new InventoryItem(item.Key);
                     int amount = int.Parse(item.Value.Nodes["amount"].Value);
                     //For each data entry in item
-                    foreach(KeyValuePair<string, Node> data in item.Value.Nodes)
+                    foreach (KeyValuePair<string, Node> data in item.Value.Nodes)
                     {
                         if (data.Key.Equals("amount"))
                             continue;
