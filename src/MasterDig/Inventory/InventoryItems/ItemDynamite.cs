@@ -21,9 +21,9 @@ namespace MasterDig.Inventory.InventoryItems
 
         public DateTime DatePlaced { get { return (DateTime)GetData("dateplaced"); } }
 
-        public int BuyPrice { get { return 60; } }
+        public int BuyPrice { get { return 250; } }
 
-        public int SellPrice { get { return 30; } }
+        public int SellPrice { get { return 125; } }
 
         public DigPlayer Placer { get { return placer; } set { placer = value; } }
     }
