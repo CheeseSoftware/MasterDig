@@ -406,7 +406,7 @@ namespace MasterDig
                     }
 
                     blocksToRemove.Sort((s1, s2) => s1.second.CompareTo(s2.second));
-
+                    bot.Room.setBlock(e.Current.first.X, e.Current.first.Y, new NormalBlock(414, 0));
                     foreach (var block in blocksToRemove)
                         DigBlock(block.first.X, block.first.Y, null, (int)Math.Floor(1 / block.second * 50) * ((float)r.Next(100) / 100 + 1), false, true);
                     blocksToRemove.Clear();
