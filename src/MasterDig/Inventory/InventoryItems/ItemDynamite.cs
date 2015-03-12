@@ -8,6 +8,8 @@ namespace MasterDig.Inventory.InventoryItems
 {
     class ItemDynamite : InventoryItem, IShopItem
     {
+        private DigPlayer placer;
+
         public ItemDynamite()
             : base("dynamite")
         {
@@ -22,5 +24,7 @@ namespace MasterDig.Inventory.InventoryItems
         public int BuyPrice { get { return 60; } }
 
         public int SellPrice { get { return 30; } }
+
+        public DigPlayer Placer { get { return placer; } set { placer = value; } }
     }
 }

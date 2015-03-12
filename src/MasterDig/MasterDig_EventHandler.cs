@@ -171,12 +171,13 @@ namespace MasterDig
                     case "dynamite":
                         {
                             ItemDynamite dynamite = new ItemDynamite();
+                            dynamite.Placer = digPlayer;
                             if (digPlayer.inventory.RemoveItem(dynamite, 1) || player.IsGod)
                             {
                                 bot.Say(player.Name + " has placed a big barrel of dynamite! Hide!!");
-                                bot.Room.setBlock(player.BlockX, player.BlockY + 1, new NormalBlock(163, 0));
+                                bot.Room.setBlock(player.BlockX, player.BlockY, new NormalBlock(163, 0));
                                 dynamites.Add(
-                                    new Pair<BlockPos, ItemDynamite>(new BlockPos(0, player.BlockX, player.BlockY + 1), dynamite)
+                                    new Pair<BlockPos, ItemDynamite>(new BlockPos(0, player.BlockX, player.BlockY), dynamite)
                                     );
                             }
                         }
@@ -385,7 +386,19 @@ namespace MasterDig
                             {
                                 bool shouldRemove = (r.Next((int)((distanceFromCenter / strength) * 100)) <= 50 ? true : false);
                                 if (shouldRemove)
+                                {
                                     blocksToRemove.Add(new Pair<BlockWithPos, double>(new BlockWithPos(xx, yy, new NormalBlock(414, 0)), distanceFromCenter));
+
+                                    if (e.Current.second.Placer != null)
+                                    {
+                                        int blockIdReplaced = bot.Room.getBlock(0, xx, yy).Id;
+                                        InventoryItem oreItem = ItemManager.GetItemFromOreId(blockIdReplaced);
+                                        if (oreItem != null && r.Next(4) == 0)
+                                        {
+                                            e.Current.second.Placer.inventory.AddItem(oreItem, 1);
+                                        }
+                                    }
+                                }
 
 
                             }
