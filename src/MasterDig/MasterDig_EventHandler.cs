@@ -180,6 +180,8 @@ namespace MasterDig
                                     new Pair<BlockPos, ItemDynamite>(new BlockPos(0, player.BlockX, player.BlockY), dynamite)
                                     );
                             }
+                            else
+                                player.Reply("You have no dynamite! Buy it at the shop.");
                         }
                         break;
                     case "dig":
