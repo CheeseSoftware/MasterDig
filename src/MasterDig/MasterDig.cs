@@ -152,8 +152,8 @@ namespace MasterDig
                 lock (dugBlocksToPlaceQueueLock)
                     dugBlocksToPlaceQueue.Enqueue(new BlockWithPos(x, y, block));
 
-                //if (blockXp > 0 && digPlayer != null)
-                //    digPlayer.digXp += blockXp;
+                if (blockXp > 0 && digPlayer != null)
+                    digPlayer.digXp += blockXp;
             }
         }
 
