@@ -27,6 +27,8 @@ namespace MasterDig.Inventory
             itemTranslator.Add("dynamite", new ItemDynamite());
         }
 
+		
+
         public static InventoryItem GetItemFromOreId(int blockId)
         {
             if (oreTranslator.ContainsKey(blockId))

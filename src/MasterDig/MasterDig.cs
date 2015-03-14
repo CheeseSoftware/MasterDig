@@ -60,7 +60,7 @@ namespace MasterDig
 
             IBlock block = bot.Room.getBlock(0, x, y);
             int blockId = -1;
-            int blockXp = 0;
+            float blockXp = 0;
 
             DigPlayer digPlayer = null;
             if (player != null)
@@ -112,26 +112,27 @@ namespace MasterDig
             {
                 case BlockIds.Blocks.Sand.BROWN:
                     blockId = 414;
-                    break;
+					blockXp = 0.08f;
+					break;
 
                 case BlockIds.Blocks.Sand.GRAY:
                     blockId = 414;
-                    blockXp = 1;
+                    blockXp = 0.1f;
                     break;
 
                 case 1022: // gray bricks
                     blockId = 414;
-                    blockXp = 2;
+                    blockXp = 0.2f;
                     break;
 
                 case BlockIds.Blocks.JungleRuins.BLUE:
                     blockId = BlockIds.Action.Liquids.WATER;
-                    blockXp = 1;
+                    blockXp = 0.1f;
                     break;
 
                 case 21:
-                    blockId = 369;//BlockIds.Action.Liquids.MUD;
-                    blockXp = 1;
+                    blockId = 369; //BlockIds.Action.Liquids.MUD;
+                    blockXp = 0.1f;
                     break;
 
                 default:

@@ -1,4 +1,6 @@
-﻿using MasterDig.Inventory;
+﻿using MasterBot;
+using MasterBot.Room.Block;
+using MasterDig.Inventory;
 using MasterDig.Inventory.InventoryItems;
 using System;
 using System.Collections.Generic;
@@ -8,32 +10,87 @@ using System.Threading.Tasks;
 
 namespace MasterDig
 {
-    public static class Shop
-    {
-        public static int xPos = 0;
-        public static int yPos = 0;
-        //public static Dictionary<string, InventoryItem> shopInventory = new Dictionary<string, InventoryItem>(ItemManager.itemTranslator);
+	public static class Shop
+	{
+		private static int xPos = 0;
+		private static int yPos = 0;
+		public static IBot bot;
+		//public static Dictionary<string, InventoryItem> shopInventory = new Dictionary<string, InventoryItem>(ItemManager.itemTranslator);
 
-        static Shop()
-        {
-            
-        }
+		static Shop()
+		{
+		}
 
-        /*static public int GetBuyPrice(InventoryItem item)
-        {
-            return (int)item.GetData("buyprice");
-        }
+		static public void BuyItem(DigPlayer player, string itemName, int amount = 1)
+		{
+			InventoryItem item = ItemManager.GetItemFromName(itemName);
+			if (item != null)
+			{
+				IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
+				int totalItemPrice = shopItem.BuyPrice * amount;
+				if (player.digMoney >= totalItemPrice)
+				{
+					player.digMoney -= totalItemPrice;
+					player.inventory.AddItem(new InventoryItem(item), amount);
+					player.Player.Reply("You bought " + amount + " " + itemName + "!");
+				}
+				else
+				{
+					if (amount == 1)
+						player.Player.Reply("You need " + totalItemPrice + " money to buy that item.");
+					else
+						player.Player.Reply("You need " + totalItemPrice + " money, " + shopItem.BuyPrice + " each, to buy those items.");
+				}
+			}
+			else
+				player.Player.Reply("That item does not exist.");
+		}
 
-        static public int GetSellPrice(InventoryItem item)
-        {
-            return (int)item.GetData("sellprice");
-        }*/
+		static public void SellItem(DigPlayer player, string itemName, int amount = 1)
+		{
+			InventoryItem item = ItemManager.GetItemFromName(itemName);
+			if (item != null)
+			{
+				IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
+				int itemSellPrice = shopItem.SellPrice;
+				if (player.inventory.Contains(item) && player.inventory.GetItemCount(item) >= amount)
+				{
+					if (player.inventory.RemoveItem(item, amount))
+					{
+						player.digMoney += itemSellPrice * amount;
+						string prefix = (amount > 1 ? "Items" : "Item");
+						player.Player.Reply(prefix + " sold! You received " + (itemSellPrice * amount) + " money.");
+					}
+					else
+						player.Player.Reply("Internal error, try doing that again.");
+				}
+				else
+					player.Player.Reply("You do not have enough of that item.");
+			}
+			else
+				player.Player.Reply("The item does not exist.");
+		}
 
-        static public void SetLocation(int x, int y)
-        {
-            xPos = x;
-            yPos = y;
-        }
+		static public void SetLocation(int x, int y)
+		{
+			if (xPos != null && yPos != null)
+				bot.Room.setBlock(xPos, yPos, new NormalBlock(0, 0));
+			bot.Room.setBlock(x, y, new NormalBlock(Skylight.BlockIds.Blocks.Pirate.CHEST, 0));
+			xPos = x;
+			yPos = y;
+		}
 
-    }
+		static public bool IsPlayerClose(IPlayer player)
+		{
+			for (int i = 0; i < 9; i++)
+			{
+				int x = i / 3 - 1;
+				int y = i % 3 - 1;
+				if (bot.Room.getBlock(0, x + player.BlockX, y + player.BlockY).Id == Skylight.BlockIds.Blocks.Pirate.CHEST)
+					return true;
+			}
+			return false;
+		}
+
+	}
 }

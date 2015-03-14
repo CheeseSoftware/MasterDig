@@ -24,6 +24,7 @@ namespace MasterDig
         public MasterDig()
             : base(null)
         {
+			
         }
 
         public string PluginName
@@ -60,7 +61,8 @@ namespace MasterDig
 
         public override void onEnable()
         {
-        }
+			Shop.bot = bot;
+		}
 
         public override void onDisable()
         {
@@ -160,11 +162,9 @@ namespace MasterDig
             if (cmdSource is IPlayer && (IPlayer)cmdSource != null)
             {
                 IPlayer player = (IPlayer)cmdSource;
-                if (!player.HasMetadata("digplayer"))
-                    player.SetMetadata("digplayer", new DigPlayer(player));
-                DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
+				DigPlayer digPlayer = DigPlayer.FromPlayer(player);
 
-                AddUnsavedPlayer(player);
+				AddUnsavedPlayer(player);
 
                 switch (cmd)
                 {
@@ -225,14 +225,72 @@ namespace MasterDig
                                     receiver.SetMetadata("digplayer", new DigPlayer(receiver));
                                 DigPlayer receiverDigPlayer = (DigPlayer)receiver.GetMetadata("digplayer");
                                 receiverDigPlayer.digXp += xp;
-                            }
+								AddUnsavedPlayer(receiver);
+							}
                             else
                                 player.Reply("That player doesn't exist.");
                         }
                         else
                             player.Reply("Usage: !givexp <player> <xp>");
                         break;
-                    case "xp":
+					case "setxp":
+						if (player.IsOp && args.Length >= 2)
+						{
+							IPlayer receiver = bot.Room.getPlayer(args[0]);
+							if (receiver != null)
+							{
+								int xp = Int32.Parse(args[1]);
+								if (!receiver.HasMetadata("digplayer"))
+									receiver.SetMetadata("digplayer", new DigPlayer(receiver));
+								DigPlayer receiverDigPlayer = (DigPlayer)receiver.GetMetadata("digplayer");
+								receiverDigPlayer.digXp = xp;
+								AddUnsavedPlayer(receiver);
+							}
+							else
+								player.Reply("That player doesn't exist.");
+						}
+						else
+							player.Reply("Usage: !setxp <player> <xp>");
+						break;
+					case "givemoney":
+						if (player.IsOp && args.Length >= 2)
+						{
+							IPlayer receiver = bot.Room.getPlayer(args[0]);
+							if (receiver != null)
+							{
+								int money = Int32.Parse(args[1]);
+								if (!receiver.HasMetadata("digplayer"))
+									receiver.SetMetadata("digplayer", new DigPlayer(receiver));
+								DigPlayer receiverDigPlayer = (DigPlayer)receiver.GetMetadata("digplayer");
+								receiverDigPlayer.digMoney += money;
+								AddUnsavedPlayer(receiver);
+							}
+							else
+								player.Reply("That player doesn't exist.");
+						}
+						else
+							player.Reply("Usage: !givemoney <player> <money>");
+						break;
+					case "setmoney":
+						if (player.IsOp && args.Length >= 2)
+						{
+							IPlayer receiver = bot.Room.getPlayer(args[0]);
+							if (receiver != null)
+							{
+								int money = Int32.Parse(args[1]);
+								if (!receiver.HasMetadata("digplayer"))
+									receiver.SetMetadata("digplayer", new DigPlayer(receiver));
+								DigPlayer receiverDigPlayer = (DigPlayer)receiver.GetMetadata("digplayer");
+								receiverDigPlayer.digMoney = money;
+								AddUnsavedPlayer(receiver);
+							}
+							else
+								player.Reply("That player doesn't exist.");
+						}
+						else
+							player.Reply("Usage: !setmoney <player> <money>");
+						break;
+					case "xp":
                         player.Reply("XP: " + digPlayer.digXp);
                         break;
                     case "xpleft":
@@ -253,38 +311,24 @@ namespace MasterDig
                         {
                             Shop.SetLocation(player.BlockX, player.BlockY);
                             player.Reply("Shop set at X:" + player.BlockX + " Y:" + player.BlockY);
-                            bot.Room.setBlock(player.BlockX, player.BlockY, new NormalBlock(Skylight.BlockIds.Blocks.Pirate.CHEST, 0));
                         }
                         break;
                     case "money":
                         player.Reply("Money: " + digPlayer.digMoney);
                         break;
                     case "buy":
-                        if (player.BlockX > Shop.xPos - 2 && player.BlockX < Shop.xPos + 2 && player.BlockY > Shop.yPos - 2 && player.BlockY < Shop.yPos + 2)
+                        if (Shop.IsPlayerClose(player))
                         {
-                            if (args.Length > 1)
+                            if (args.Length >= 1)
                             {
                                 string itemName = args[0].ToLower();
-                                InventoryItem item = ItemManager.GetItemFromName(itemName);
-                                if (item != null)
-                                {
-                                    IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
-                                    int itemPrice = shopItem.BuyPrice;
-
-                                    int amount = 1;
-                                    if (args.Length >= 2)
-                                        int.TryParse(args[1], out amount);
-                                    if (digPlayer.digMoney >= (itemPrice * amount))
-                                    {
-                                        digPlayer.digMoney -= itemPrice;
-                                        digPlayer.inventory.AddItem(new InventoryItem(item), amount);
-                                        player.Reply("Item bought!");
-                                    }
-                                    else
-                                        player.Reply("You do not have enough money.");
-                                }
-                                else
-                                    player.Reply("The requested item does not exist.");
+								int amount = 1;
+								if (args.Length >= 2)
+								{
+									if (!int.TryParse(args[1], out amount))
+										amount = 1;
+								}
+								Shop.BuyItem(digPlayer, itemName, amount);
                             }
                             else
                                 player.Reply("Please specify what you want to buy.");
@@ -293,32 +337,18 @@ namespace MasterDig
                             player.Reply("You aren't near the shop.");
                         break;
                     case "sell":
-                        if (player.BlockX > Shop.xPos - 2 && player.BlockX < Shop.xPos + 2 && player.BlockY > Shop.yPos - 2 && player.BlockY < Shop.yPos + 2)
+                        if (Shop.IsPlayerClose(player))
                         {
-                            if (args.Length > 1)
+                            if (args.Length >= 1)
                             {
                                 string itemName = args[0].ToLower();
-                                InventoryItem item = ItemManager.GetItemFromName(itemName);
-                                if (item != null)
-                                {
-                                    IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
-                                    int itemSellPrice = shopItem.SellPrice;
-
-                                    int amount = 1;
-                                    if (args.Length >= 2)
-                                        int.TryParse(args[1], out amount);
-                                    if (digPlayer.inventory.Contains(item) && digPlayer.inventory.GetItemCount(item) >= amount)
-                                    {
-                                        digPlayer.digMoney += itemSellPrice * amount;
-                                        if (!digPlayer.inventory.RemoveItem(item, amount))
-                                            throw new Exception("Could not remove item?D:");
-                                        player.Reply("Item sold! You received " + (itemSellPrice * amount) + " money.");
-                                    }
-                                    else
-                                        player.Reply("You do not have enough of that item.");
-                                }
-                                else
-                                    player.Reply("The item does not exist.");
+								int amount = 1;
+								if (args.Length >= 2)
+								{
+									if (!int.TryParse(args[1], out amount))
+										amount = 1;
+								}
+								Shop.SellItem(digPlayer, itemName, amount);
                             }
                             else
                                 player.Reply("Please specify what you want to sell.");
