@@ -29,6 +29,8 @@ namespace MasterDig
                 return true;
             else if (blockId >= 16 && blockId <= 21)
                 return true;
+            else if (blockId == 1022) // gray brick-stone
+                return true;
             else if (blockId == Skylight.BlockIds.Blocks.JungleRuins.BLUE)
                 return true;
             else
@@ -58,6 +60,16 @@ namespace MasterDig
 
             IBlock block = bot.Room.getBlock(0, x, y);
             int blockId = -1;
+            int blockXp = 0;
+
+            DigPlayer digPlayer = null;
+            if (player != null)
+            {
+                if (!player.HasMetadata("digplayer"))
+                    player.SetMetadata("digplayer", new DigPlayer(player));
+
+                 digPlayer = (DigPlayer)player.GetMetadata("digplayer");
+            }
 
             if (mining)
             {
@@ -67,9 +79,7 @@ namespace MasterDig
                     Ore ore = ItemManager.GetOreByName(temp.Name);
                     blockId = 414;
 
-                    if (!player.HasMetadata("digplayer"))
-                        player.SetMetadata("digplayer", new DigPlayer(player));
-                    DigPlayer digPlayer = (DigPlayer)player.GetMetadata("digplayer");
+                    
 
                     if (digPlayer.digLevel >= Convert.ToInt32(ore.LevelRequired))
                     {
@@ -101,16 +111,27 @@ namespace MasterDig
             switch (block.Id)
             {
                 case BlockIds.Blocks.Sand.BROWN:
+                    blockId = 414;
+                    break;
+
                 case BlockIds.Blocks.Sand.GRAY:
                     blockId = 414;
+                    blockXp = 1;
+                    break;
+
+                case 1022: // gray bricks
+                    blockId = 414;
+                    blockXp = 2;
                     break;
 
                 case BlockIds.Blocks.JungleRuins.BLUE:
                     blockId = BlockIds.Action.Liquids.WATER;
+                    blockXp = 1;
                     break;
 
                 case 21:
                     blockId = 369;//BlockIds.Action.Liquids.MUD;
+                    blockXp = 1;
                     break;
 
                 default:
@@ -129,6 +150,9 @@ namespace MasterDig
                 bot.Room.setBlock(x, y, new NormalBlock(blockId));
                 lock (dugBlocksToPlaceQueueLock)
                     dugBlocksToPlaceQueue.Enqueue(new BlockWithPos(x, y, block));
+
+                if (blockXp > 0 && digPlayer != null)
+                    digPlayer.digXp += blockXp;
             }
         }
 
@@ -163,8 +187,11 @@ namespace MasterDig
                 {
                     if (blockId == Skylight.BlockIds.Blocks.Sand.BROWN)
                         digHardness[x, y] = 1F;
+                    else if (blockId == 1022)
+                        digHardness[x, y] = 16F;
                     else
-                        digHardness[x, y] = 15F;
+                        digHardness[x, y] = 8F;
+
                 }
                 else if (ItemManager.GetItemFromOreId(blockId) != null)
                 {

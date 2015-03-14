@@ -32,25 +32,28 @@ namespace MasterDig
                     double distanceFromCenter = Math.Sqrt(Math.Pow(x - width / 2, 2) + Math.Pow(y - height / 2, 2)) / ((width > height) ? width : height) * 2;
                     double distanceFromCenterPow = Math.Pow(distanceFromCenter, 1.5);
 
-                    if (noise.GetValue(x * 0.015625F, y * 0.015625F, 0) > 1 - 0.25F * distanceFromCenterPow)                 // slimy mud
-                        blockMap.setBlock(x, y, new NormalBlock(21, 0));
+                    //if (noise.GetValue(x * 0.015625F, y * 0.015625F, 0) > 1 - 0.25F * distanceFromCenterPow)                 // slimy mud
+                    //    blockMap.setBlock(x, y, new NormalBlock(21, 0));
 
-                    else if (noise.GetValue(x * 0.03125F, y * 0.03125F, 32) > 1 - 0.75 * distanceFromCenter)      // slimy mud
-                        blockMap.setBlock(x, y, new NormalBlock(21, 0));
+                    //else if (noise.GetValue(x * 0.03125F, y * 0.03125F, 32) > 1 - 0.75 * distanceFromCenter)      // slimy mud
+                    //    blockMap.setBlock(x, y, new NormalBlock(21, 0));
 
-                    else if (noise.GetValue(x * 0.015625F, y * 0.015625F, 48) > 1 - 0.5 * distanceFromCenter) // Water
-                        blockMap.setBlock(x, y, new NormalBlock(197, 0));
+                    //else if (noise.GetValue(x * 0.015625F, y * 0.015625F, 48) > 1 - 0.5 * distanceFromCenter) // Water
+                    //    blockMap.setBlock(x, y, new NormalBlock(197, 0));
 
-                    else if (noise.GetValue(x * 0.03125F, y * 0.03125F, 64) > 1 - 0.75 * distanceFromCenter) //wet stones
-                        blockMap.setBlock(x, y, new NormalBlock(197, 0));
+                    //else if (noise.GetValue(x * 0.03125F, y * 0.03125F, 64) > 1 - 0.75 * distanceFromCenter) //wet stones
+                    //    blockMap.setBlock(x, y, new NormalBlock(197, 0));
 
-                    else if (noise.GetValue(x * 0.0078125F, y * 0.0078125F, 96) > 1 - 0.75 * distanceFromCenterPow)
+                     if (noise.GetValue(x * 0.0078125F, y * 0.0078125F, 96) > 1 - 0.75 * distanceFromCenterPow)
                         blockMap.setBlock(x, y, new NormalBlock((int)Blocks.Stone, 0));
 
                     else if (noise.GetValue(x * 0.015625F, y * 0.015625F, 128) > 1 - 0.75 * distanceFromCenter)
                         blockMap.setBlock(x, y, new NormalBlock((int)Blocks.Stone, 0));
 
-                    else if (distanceFromCenter > 0.5)
+                    else if (distanceFromCenter + 0.33 * noise.GetValue(x * 0.015625F, y * 0.015625F, 48) > 1)
+                        blockMap.setBlock(x, y, new NormalBlock((int)1022, 0));
+
+                    else if (distanceFromCenter + 0.33 * noise.GetValue(x * 0.015625F, y * 0.015625F, 48) > 0.5)
                         blockMap.setBlock(x, y, new NormalBlock((int)Skylight.BlockIds.Blocks.Sand.GRAY, 0));
 
                     else// if (noise.GetValue(x * 0.015625F, y * 0.015625F, 160) > 0)
@@ -141,7 +144,7 @@ namespace MasterDig
                                 background = new NormalBlock(584, 1);
                                 break;
                         }
-                        generatorDrawer.PlaceBlock(x, y, background);
+                        //generatorDrawer.PlaceBlock(x, y, background);
                         resetBlockHardness(x, y, blockMap.getBlock(0, x, y).Id);
                     }
                 }

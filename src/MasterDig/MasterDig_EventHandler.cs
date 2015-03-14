@@ -193,9 +193,9 @@ namespace MasterDig
                         player.Reply("!buy, !sell, !money, !levelforores, !save");
                         break;
                     case "levelforores":
-                        player.Reply("stone: 0,   copper: 2,   iron: 6,");
-                        player.Reply("gold: 10,   emerald: 15,   ruby: 20,");
-                        player.Reply("ruby: 20,   sapphire: 25,   diamond: 30");
+                        player.Reply("stone: 0,   copper: 4,   iron: 12,");
+                        player.Reply("gold: 20,   emerald: 30,   ruby: 40,");
+                        player.Reply("sapphire: 50,   diamond: 60");
                         break;
                     case "generate":
                         if (player.IsOp)

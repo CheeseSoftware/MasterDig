@@ -15,14 +15,14 @@ namespace MasterDig.Inventory
 
         static ItemManager()
         {
-            AddOre((int)Blocks.Stone, new Ore("stone", 1, 10, 1, 5, 0));
-            AddOre((int)Blocks.Copper, new Ore("copper", 5, 5, 2, 10, 2));
-            AddOre((int)Blocks.Iron, new Ore("iron", 6, 8, 3, 14, 6));
-            AddOre((int)Blocks.Gold, new Ore("gold", 15, 15, 14, 18, 10));
-            AddOre((int)Blocks.Emerald, new Ore("emerald", 5, 5, 0, 24, 15));
-            AddOre((int)Blocks.Ruby, new Ore("ruby", 5, 5, 0, 30, 20));
-            AddOre((int)Blocks.Sapphire, new Ore("sapphire", 5, 5, 0, 36, 25));
-            AddOre((int)Blocks.Diamond, new Ore("diamond", 5, 5, 0, 56, 30));
+            AddOre((int)Blocks.Stone, new Ore("stone", 5, 10, 1, 5, 0));
+            AddOre((int)Blocks.Copper, new Ore("copper", 25, 5, 2, 10, 4));
+            AddOre((int)Blocks.Iron, new Ore("iron", 30, 8, 3, 14, 12));
+            AddOre((int)Blocks.Gold, new Ore("gold", 75, 15, 14, 18, 20));
+            AddOre((int)Blocks.Emerald, new Ore("emerald", 25, 5, 0, 24, 30));
+            AddOre((int)Blocks.Ruby, new Ore("ruby", 25, 5, 0, 30, 40));
+            AddOre((int)Blocks.Sapphire, new Ore("sapphire", 25, 5, 0, 36, 50));
+            AddOre((int)Blocks.Diamond, new Ore("diamond", 25, 5, 0, 56, 60));
 
             itemTranslator.Add("dynamite", new ItemDynamite());
         }
