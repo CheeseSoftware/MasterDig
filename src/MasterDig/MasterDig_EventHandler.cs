@@ -375,7 +375,7 @@ namespace MasterDig
 							else
 							{
 								player.Reply("Usage: !sell <item> [amount=1]");
-								Shop.BuyItem(digPlayer, "", 0);
+								Shop.SellItem(digPlayer, "", 0);
 							}
 						}
 						else
