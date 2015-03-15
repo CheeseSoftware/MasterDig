@@ -174,7 +174,7 @@ namespace MasterDig
 							dynamite.Placer = digPlayer;
 							if (digPlayer.inventory.RemoveItem(dynamite, 1) || player.IsGod)
 							{
-								bot.Say(player.Name + " has placed a big barrel of dynamite! Hide!!");
+								bot.ChatSayer.Say(player.Name + " has placed a big barrel of dynamite! Hide!!");
 								bot.Room.setBlock(player.BlockX, player.BlockY, new NormalBlock(163, 0));
 								dynamites.Add(
 									new Pair<BlockPos, ItemDynamite>(new BlockPos(0, player.BlockX, player.BlockY), dynamite)
@@ -208,11 +208,11 @@ namespace MasterDig
 							if (args.Length >= 1)
 							{
 								Int32.TryParse(args[0], out seed);
-							}
+                            }
 							if (seed == -1)
 								seed = random.Next();
 
-							bot.Say("Generating new map with seed " + seed + ".");
+							bot.ChatSayer.Say("Generating new map with seed " + seed + ".");
 							digHardness = new float[bot.Room.Width, bot.Room.Height];
 							Generate(bot.Room.Width, bot.Room.Height, seed);
 						}
