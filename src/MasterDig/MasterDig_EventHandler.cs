@@ -80,6 +80,15 @@ namespace MasterDig
 		{
 			switch (m.Type)
 			{
+				case "add":
+					{
+						IPlayer player = bot.Room.getPlayer(m.GetInt(0));
+						if (player != null)
+						{
+							player.SetMetadata("digplayer", new DigPlayer(player));
+						}
+					}
+					break;
 				case "init":
 				case "reset":
 					digHardness = new float[bot.Room.Width, bot.Room.Height];
