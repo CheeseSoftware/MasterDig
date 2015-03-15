@@ -172,7 +172,7 @@ namespace MasterDig
 						{
 							ItemDynamite dynamite = new ItemDynamite();
 							dynamite.Placer = digPlayer;
-							if (digPlayer.inventory.RemoveItem(dynamite, 1) || player.IsGod)
+							if (digPlayer.Inventory.RemoveItem(dynamite, 1) || player.IsGod)
 							{
 								bot.ChatSayer.Say(player.Name + " has placed a big barrel of dynamite! Hide!!");
 								bot.Room.setBlock(player.BlockX, player.BlockY, new NormalBlock(163, 0));
@@ -303,7 +303,7 @@ namespace MasterDig
 						player.Reply("Level: " + digPlayer.digLevel);
 						break;
 					case "inventory":
-						player.Reply(digPlayer.inventory.ToString());
+						player.Reply(digPlayer.Inventory.ToString());
 						break;
 					case "save":
 						player.Reply("Saved!");
@@ -452,7 +452,7 @@ namespace MasterDig
 										InventoryItem oreItem = ItemManager.GetItemFromOreId(blockIdReplaced);
 										if (oreItem != null && r.Next(4) == 0)
 										{
-											e.Current.second.Placer.inventory.AddItem(oreItem, 1);
+											e.Current.second.Placer.Inventory.AddItem(oreItem, 1);
 										}
 									}
 								}

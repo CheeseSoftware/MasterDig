@@ -1,4 +1,6 @@
-﻿using MasterBot.IO;
+﻿using MasterBot;
+using MasterBot.Inventory;
+using MasterBot.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,18 +13,18 @@ using System.Threading.Tasks;
 
 namespace MasterDig.Inventory
 {
-    public class Inventory
+    public class Inventory : IInventory
     {
-        private Dictionary<string, Pair<InventoryItem, int>> storedItems;
+        private Dictionary<string, Pair<IInventoryItem, int>> storedItems;
         public int capacity { get; set; }
 
         public Inventory(int size)
         {
-            storedItems = new Dictionary<string, Pair<InventoryItem, int>>(size);
+            storedItems = new Dictionary<string, Pair<IInventoryItem, int>>(size);
             capacity = size;
         }
 
-        public InventoryItem GetItem(string name)
+        public IInventoryItem GetItem(string name)
         {
             lock (storedItems)
             {
@@ -42,7 +44,7 @@ namespace MasterDig.Inventory
             }
         }
 
-        public int GetItemCount(InventoryItem item)
+        public int GetItemCount(IInventoryItem item)
         {
             lock (storedItems)
             {
@@ -52,7 +54,7 @@ namespace MasterDig.Inventory
             }
         }
 
-        public List<Pair<InventoryItem, int>> GetItems()
+        public List<Pair<IInventoryItem, int>> GetItems()
         {
             lock (storedItems)
             {
@@ -60,7 +62,7 @@ namespace MasterDig.Inventory
             }
         }
 
-        public bool RemoveItem(InventoryItem item, int amount)
+        public bool RemoveItem(IInventoryItem item, int amount)
         {
             return RemoveItem(item.Name, amount);
         }
@@ -87,7 +89,7 @@ namespace MasterDig.Inventory
             }
         }
 
-        public bool AddItem(InventoryItem item, int amount)
+        public bool AddItem(IInventoryItem item, int amount)
         {
             lock (storedItems)
             {
@@ -98,7 +100,7 @@ namespace MasterDig.Inventory
                 }
                 else if (storedItems.Count < capacity)
                 {
-                    storedItems.Add(item.Name, new Pair<InventoryItem, int>(item, amount));
+                    storedItems.Add(item.Name, new Pair<IInventoryItem, int>(item, amount));
                     return true;
                 }
                 return false;
@@ -110,7 +112,7 @@ namespace MasterDig.Inventory
             lock (storedItems)
             {
                 string contents = "Inventory: ";
-                foreach (Pair<InventoryItem, int> i in storedItems.Values)
+                foreach (Pair<IInventoryItem, int> i in storedItems.Values)
                 {
                     contents += i.second + " " + i.first.Name + ", ";
                 }
@@ -129,7 +131,7 @@ namespace MasterDig.Inventory
             }
         }
 
-        public bool Contains(InventoryItem item)
+        public bool Contains(IInventoryItem item)
         {
             return (Contains(item.Name));
         }
@@ -137,7 +139,7 @@ namespace MasterDig.Inventory
         public SaveFile Save(SaveFile saveFile)
         {
             //For each item in inventory
-            foreach (KeyValuePair<string, Pair<InventoryItem, int>> data in storedItems)
+            foreach (KeyValuePair<string, Pair<IInventoryItem, int>> data in storedItems)
             {
                 saveFile.AddNode(new NodePath("inventory." + data.Value.first.Name + ".amount"), new Node(data.Value.second.ToString()));
                 //For each data entry in item
@@ -158,7 +160,7 @@ namespace MasterDig.Inventory
                 //For each item in inventory
                 foreach (KeyValuePair<string, Node> item in inventory.Nodes)
                 {
-                    InventoryItem inventoryItem = new InventoryItem(item.Key);
+					IInventoryItem inventoryItem = new InventoryItem(item.Key);
                     int amount = int.Parse(item.Value.Nodes["amount"].Value);
                     //For each data entry in item
                     foreach (KeyValuePair<string, Node> data in item.Value.Nodes)

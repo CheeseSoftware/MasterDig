@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MasterBot.Inventory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace MasterDig.Inventory
 {
-    public class InventoryItem
-    {
+    public class InventoryItem : IInventoryItem
+	{
         protected Dictionary<string, object> data = new Dictionary<string,object>();
         protected string _name;
 

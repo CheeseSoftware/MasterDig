@@ -31,7 +31,7 @@ namespace MasterDig
 				if (player.digMoney >= totalItemPrice)
 				{
 					player.digMoney -= totalItemPrice;
-					player.inventory.AddItem(new InventoryItem(item), amount);
+					player.Inventory.AddItem(new InventoryItem(item), amount);
 					player.Player.Reply("You bought " + amount + " " + itemName + "!");
 				}
 				else
@@ -66,9 +66,9 @@ namespace MasterDig
 				if (shopItem != null)
 				{
 					int itemSellPrice = shopItem.SellPrice;
-					if (player.inventory.Contains(item) && player.inventory.GetItemCount(item) >= amount)
+					if (player.Inventory.Contains(item) && player.Inventory.GetItemCount(item) >= amount)
 					{
-						if (player.inventory.RemoveItem(item, amount))
+						if (player.Inventory.RemoveItem(item, amount))
 						{
 							player.digMoney += itemSellPrice * amount;
 							string prefix = (amount > 1 ? "Items" : "Item");

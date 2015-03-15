@@ -89,7 +89,7 @@ namespace MasterDig
 
                             InventoryItem newsak = new InventoryItem(temp);
 
-                            digPlayer.inventory.AddItem(newsak, 1);
+                            digPlayer.Inventory.AddItem(newsak, 1);
                             int oldLevel = digPlayer.digLevel;
                             digPlayer.digXp += Convert.ToInt32(ore.XPGain);
                             int newLevel = digPlayer.digLevel;

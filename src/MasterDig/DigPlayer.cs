@@ -11,6 +11,7 @@ using MasterBot;
 using MasterDig.Inventory;
 using System.Runtime.Serialization.Formatters.Binary;
 using MasterBot.IO;
+using MasterBot.Inventory;
 
 namespace MasterDig
 {
@@ -32,10 +33,10 @@ namespace MasterDig
 		public int MinLevel { get { return minLevel; } }
 	}
 
-	public class DigPlayer
+	public class DigPlayer : IInventoryContainer
 	{
 		Stopwatch betaDigTimer = new Stopwatch();
-		public Inventory.Inventory inventory = new Inventory.Inventory(100);
+		private Inventory.Inventory inventory = new Inventory.Inventory(100);
 		Dictionary<string, Ability> abilities;
 		SafeList<Ability> newAbilities;
 		protected float xp = 0;
@@ -186,6 +187,14 @@ namespace MasterDig
 					xpRequired = getXpRequired((digLevel_ = getLevel(xp)));
 					updateNewAbilities();
 				}
+			}
+		}
+
+		public IInventory Inventory
+		{
+			get
+			{
+				return inventory;
 			}
 		}
 
