@@ -6,40 +6,32 @@ using System.Threading.Tasks;
 
 namespace MasterDig.Inventory.InventoryItems
 {
-    public class Ore : IShopItem
-    {
-        private string _name;
-        private int _XPGain;
-        private int _buyPrice;
-        private int _sellPrice;
-        private int _hardness;
-        private int _levelRequired;
+	public class Ore : InventoryItem, IShopItem
+	{
+		private int _XPGain;
+		private int _buyPrice;
+		private int _sellPrice;
+		private int _hardness;
+		private int _levelRequired;
 
-        public Ore(string name, int XPGain, int buyPrice, int sellPrice, int hardness, int levelRequired)
-        {
-            _name = name;
-            _XPGain = XPGain;
-            _buyPrice = buyPrice;
-            _sellPrice = sellPrice;
-            _hardness = hardness;
-            _levelRequired = levelRequired;
-        }
+		public Ore(string name, int XPGain, int buyPrice, int sellPrice, int hardness, int levelRequired)
+			: base(name)
+		{
+			_XPGain = XPGain;
+			_buyPrice = buyPrice;
+			_sellPrice = sellPrice;
+			_hardness = hardness;
+			_levelRequired = levelRequired;
+		}
 
-        public InventoryItem GetItem()
-        {
-            return new InventoryItem(_name);
-        }
+		public int XPGain { get { return _XPGain; } }
 
-        public String Name { get { return _name; } }
+		public int BuyPrice { get { return _buyPrice; } }
 
-        public int XPGain { get { return _XPGain; } }
+		public int SellPrice { get { return _sellPrice; } }
 
-        public int BuyPrice { get { return _buyPrice; } }
+		public int Hardness { get { return _hardness; } }
 
-        public int SellPrice { get { return _sellPrice; } }
-
-        public int Hardness { get { return _hardness; } }
-
-        public int LevelRequired { get { return _levelRequired; } }
-    }
+		public int LevelRequired { get { return _levelRequired; } }
+	}
 }

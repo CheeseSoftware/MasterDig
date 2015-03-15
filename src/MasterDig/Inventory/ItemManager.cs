@@ -32,7 +32,7 @@ namespace MasterDig.Inventory
         public static InventoryItem GetItemFromOreId(int blockId)
         {
             if (oreTranslator.ContainsKey(blockId))
-                return oreTranslator[blockId].GetItem();
+                return oreTranslator[blockId];
             return null;
         }
 
@@ -63,10 +63,26 @@ namespace MasterDig.Inventory
             return null;
         }
 
-        private static void AddOre(int block, Ore ore)
+		public static List<InventoryItem> GetBuyableItems()
+		{
+			List<InventoryItem> items = new List<InventoryItem>();
+			foreach (var v in itemTranslator)
+			{
+				if (v.Value is IShopItem)
+					items.Add(v.Value);
+			}
+			return items;
+		}
+
+		public static List<Ore> GetOres()
+		{
+			return oreTranslator.Values.ToList();
+		}
+
+		private static void AddOre(int block, Ore ore)
         {
             oreTranslator.Add(block, ore);
-            itemTranslator.Add(ore.Name, ore.GetItem());
+            itemTranslator.Add(ore.Name, ore);
             oreTranslatorByName.Add(ore.Name, ore);
         }
     }

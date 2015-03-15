@@ -24,9 +24,9 @@ namespace MasterDig
 		static public void BuyItem(DigPlayer player, string itemName, int amount = 1)
 		{
 			InventoryItem item = ItemManager.GetItemFromName(itemName);
-			if (item != null)
+			IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
+			if (item != null && shopItem != null)
 			{
-				IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
 				int totalItemPrice = shopItem.BuyPrice * amount;
 				if (player.digMoney >= totalItemPrice)
 				{
@@ -43,7 +43,18 @@ namespace MasterDig
 				}
 			}
 			else
-				player.Player.Reply("That item does not exist.");
+			{
+				if (itemName != "")
+					player.Player.Reply("That item does not exist.");
+				player.Player.Reply("You can buy these items:");
+				List<InventoryItem> shopItems = ItemManager.GetBuyableItems();
+				string temp = "";
+				foreach (InventoryItem oitem in shopItems)
+				{
+					temp += oitem.Name + (shopItems.Last().Name.Equals(oitem.Name) ? "" : ", ");
+				}
+				player.Player.Send(temp);
+			}
 		}
 
 		static public void SellItem(DigPlayer player, string itemName, int amount = 1)
@@ -52,23 +63,31 @@ namespace MasterDig
 			if (item != null)
 			{
 				IShopItem shopItem = ItemManager.GetShopItemByName(itemName);
-				int itemSellPrice = shopItem.SellPrice;
-				if (player.inventory.Contains(item) && player.inventory.GetItemCount(item) >= amount)
+				if (shopItem != null)
 				{
-					if (player.inventory.RemoveItem(item, amount))
+					int itemSellPrice = shopItem.SellPrice;
+					if (player.inventory.Contains(item) && player.inventory.GetItemCount(item) >= amount)
 					{
-						player.digMoney += itemSellPrice * amount;
-						string prefix = (amount > 1 ? "Items" : "Item");
-						player.Player.Reply(prefix + " sold! You received " + (itemSellPrice * amount) + " money.");
+						if (player.inventory.RemoveItem(item, amount))
+						{
+							player.digMoney += itemSellPrice * amount;
+							string prefix = (amount > 1 ? "Items" : "Item");
+							player.Player.Reply(prefix + " sold! You received " + (itemSellPrice * amount) + " money.");
+						}
+						else
+							player.Player.Reply("Internal error, try doing that again.");
 					}
 					else
-						player.Player.Reply("Internal error, try doing that again.");
+						player.Player.Reply("You do not have enough of that item.");
 				}
 				else
-					player.Player.Reply("You do not have enough of that item.");
+					player.Player.Reply("You can't sell that item.");
 			}
 			else
-				player.Player.Reply("The item does not exist.");
+			{
+				if (itemName != "")
+					player.Player.Reply("That item does not exist.");
+			}
 		}
 
 		static public void SetLocation(int x, int y)
