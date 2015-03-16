@@ -39,6 +39,7 @@
     <Reference Include="MasterBotLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\MasterBot\src\MasterBot\bin\Debug\MasterBotLib.dll</HintPath>
+      <HintPath>..\..\..\MasterBot\src\MasterBotLib\bin\Debug\MasterBotLib.dll</HintPath>
     </Reference>
     <Reference Include="PlayerIOClient">
       <HintPath>..\..\..\MasterBot\src\MasterBotLib\bin\Debug\PlayerIOClient.dll</HintPath>

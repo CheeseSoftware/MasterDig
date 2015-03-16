@@ -424,7 +424,7 @@ namespace MasterDig
 
 			lock (dugBlocksToPlaceQueueLock)
 			{
-				while (dugBlocksToPlaceQueue.Count > bot.Room.Width * bot.Room.Height / 20)
+				while (dugBlocksToPlaceQueue.Count > bot.Room.Width * bot.Room.Height / 5)
 				{
 					BlockWithPos block = dugBlocksToPlaceQueue.Dequeue();
 					if (digHardness[block.X, block.Y] == 0f)
