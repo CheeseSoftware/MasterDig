@@ -82,6 +82,12 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shop.cs" />
+    <Compile Include="Zombies\BinaryHeap.cs" />
+    <Compile Include="Zombies\LowHPathHeap.cs" />
+    <Compile Include="Zombies\Pathfinding.cs" />
+    <Compile Include="Zombies\PathHeap.cs" />
+    <Compile Include="Zombies\Zombie.cs" />
+    <Compile Include="Zombies\Zombies.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MasterDig_EventHandler.resx">

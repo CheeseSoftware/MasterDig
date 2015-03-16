@@ -20,11 +20,12 @@ namespace MasterDig
 		HashSet<IPlayer> playersToSave = new HashSet<IPlayer>();
 		Queue<IPlayer> playersToSaveQueue = new Queue<IPlayer>();
 		List<Pair<BlockPos, ItemDynamite>> dynamites = new List<Pair<BlockPos, ItemDynamite>>();
+		Zombies.Zombies zombies;
 
 		public MasterDig()
 			: base(null)
 		{
-
+             zombies = new Zombies.Zombies(bot);
 		}
 
 		public string PluginName
@@ -224,6 +225,13 @@ namespace MasterDig
 							bot.ChatSayer.Say("Generating new map with seed " + seed + ".");
 							digHardness = new float[bot.Room.Width, bot.Room.Height];
 							Generate(bot.Room.Width, bot.Room.Height, seed);
+						}
+						break;
+					case "worm":
+						if (player.IsOp)
+						{
+							zombies.SpawnZombie(player.BlockX, player.BlockY);
+							player.Reply("Worm spawned.");
 						}
 						break;
 					case "givexp":

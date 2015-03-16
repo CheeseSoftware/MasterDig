@@ -23,7 +23,7 @@ namespace MasterDig
         private IBlockDrawer blockDrawer;
         Random random = new Random();
 
-        private bool isDigable(int blockId)
+        public static bool isDigable(int blockId)
         {
             if (blockId >= Skylight.BlockIds.Blocks.Sand.BROWN - 5 && blockId <= Skylight.BlockIds.Blocks.Sand.BROWN)
                 return true;
@@ -37,7 +37,7 @@ namespace MasterDig
                 return false;
         }
 
-        private bool isDug(int blockId)
+		public static bool isDug(int blockId)
         {
             if (blockId == 4 || blockId == 414)
                 return true;
