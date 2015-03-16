@@ -20,12 +20,11 @@ namespace MasterDig
 		HashSet<IPlayer> playersToSave = new HashSet<IPlayer>();
 		Queue<IPlayer> playersToSaveQueue = new Queue<IPlayer>();
 		List<Pair<BlockPos, ItemDynamite>> dynamites = new List<Pair<BlockPos, ItemDynamite>>();
-		Zombies.Zombies zombies;
 
 		public MasterDig()
 			: base(null)
 		{
-             zombies = new Zombies.Zombies(bot);
+
 		}
 
 		public string PluginName
@@ -47,6 +46,7 @@ namespace MasterDig
 		{
 			// This is required since I can't fix this in the constructor. :/
 			this.bot = bot;
+			zombies = new Zombies.Zombies(bot);
 
 			// 0 is the Priority, it's the lowest possible.
 			blockDrawer = bot.Room.BlockDrawerPool.CreateBlockDrawer(0);

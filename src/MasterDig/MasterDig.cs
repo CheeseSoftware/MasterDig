@@ -22,8 +22,9 @@ namespace MasterDig
         protected float[,] digHardness;
         private IBlockDrawer blockDrawer;
         Random random = new Random();
+		Zombies.Zombies zombies;
 
-        public static bool isDigable(int blockId)
+		public static bool isDigable(int blockId)
         {
             if (blockId >= Skylight.BlockIds.Blocks.Sand.BROWN - 5 && blockId <= Skylight.BlockIds.Blocks.Sand.BROWN)
                 return true;
